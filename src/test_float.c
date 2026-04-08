@@ -1,6 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+/*
+Test to check that float numbers are not real numbers 
+(and in fact are even less real then double ones)
+*/
+
 int main(void)
     {
     float x, y;

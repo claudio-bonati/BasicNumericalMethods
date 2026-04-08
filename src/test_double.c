@@ -1,6 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+/*
+Test to check that double numbers are not real numbers
+*/
+
 int main(void)
     {
     double x, y;
