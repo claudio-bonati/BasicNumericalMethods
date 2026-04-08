@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99 
 
-binaries=test_float test_double
+binaries=test_float test_double example_root_find
 
 all: $(binaries)
 
@@ -10,6 +10,15 @@ test_float: ../src/test_float.c
 
 test_double: ../src/test_double.c
 	$(CC) $(CFLAGS) ../src/test_double.c -o $@ -lm
+
+root_find.o: ../lib/root_find.c ../include/root_find.h
+	$(CC) $(CFLAGS) -c ../lib/root_find.c 
+
+example_root_find: ../src/example_root_find.c root_find.o
+	$(CC) $(CFLAGS) -c ../src/example_root_find.c 
+	$(CC) $(CFLAGS) root_find.o example_root_find.o -o $@ -lm 
+
+
 
 #pi_no_rng: ../src/pi_no_rng.c
 #	$(CC) $(CFLAGS) ../src/pi_no_rng.c -o $@ -lm
