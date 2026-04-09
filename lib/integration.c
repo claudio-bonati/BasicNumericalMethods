@@ -24,28 +24,21 @@ double trapezoidal(double (*func)(double),  // function to be integrated
     return 1.0/0.0;
     }
   
-  if(n==1) 
-    {
-    s=0.5*(b-a)*( (*func)(a) + (*func)(b));
-    } 
-  else 
-    {
-    numpoints=1;
-    for(i=0; i<n; i++) numpoints*=2;
+  numpoints=1;
+  for(i=0; i<n; i++) numpoints*=2;
 
-    delta=(b-a)/(double) (numpoints-1);
+  delta=(b-a)/(double) (numpoints-1);
 
-    x=a;
-    sum=0.5*(*func)(x);
-    for(i=1; i<numpoints-1; i++) 
-       {
-       x+=delta;
-       sum += (*func)(x);
-       }
-    sum+=0.5*(*func)(b);
+  x=a;
+  sum=0.5*(*func)(x);
+  for(i=1; i<numpoints-1; i++) 
+     {
+     x+=delta;
+     sum += (*func)(x);
+     }
+  sum+=0.5*(*func)(b);
 
-    s=delta*sum;
-    }
+  s=delta*sum;
 
   return s;
   }
