@@ -20,7 +20,7 @@ double bisection(double (*func)(double),  // we want to solve func(x)=0, the fun
   if(f*fmid >= 0.0) 
     {
     fprintf(stderr, "Root must be bracketed for bisection to work! (%s, %d)\n", __FILE__, __LINE__);
-    return 0.0;
+    return 1.0/0.0;
     }
 
   // negx is the side of the integral where func<0
@@ -51,7 +51,8 @@ double bisection(double (*func)(double),  // we want to solve func(x)=0, the fun
 
   fprintf(stderr, "Too many bissections in (%s, %d)\n", __FILE__, __LINE__);
   fprintf(stderr, "maxiter=%d reached\n", maxiter);
-  return 0.0;
+
+  return 1.0/0.0;
   }
 
 
@@ -101,5 +102,6 @@ double secant(double (*func)(double),  // we want to solve func(x)=0, the functi
 
   fprintf(stderr, "Too many iterations in (%s, %d)\n", __FILE__, __LINE__);
   fprintf(stderr, "maxiter=%d reached\n", maxiter);
-  return 0.0;
+
+  return 1.0/0.0;
   }
