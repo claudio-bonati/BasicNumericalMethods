@@ -1,0 +1,42 @@
+**********************************************************
+******     SOME BASIC C CODES TO GET ACQUAINTED     ******
+******        WITH TYPICAL NUMERICAL PROBLEMS       ******
+**********************************************************
+
+The main reference for all the codes is 
+
+W. H. Press, S. A. Teukolsky, W. T. Vetterling, B. P. Flannery 
+``Numerical Recipes in C. The Art of Scientific Computing'' 
+Cambridge University Press
+
+where you can find much more information about the algorithms 
+and references to proofs.
+
+------------------------
+
+
+To compile use 
+
+make
+
+and executables will be generated in the build directory. Default 
+compiler is gcc, if you want to use a different compiler 
+(e.g. clang), please use 
+
+make CC="your compiler"
+
+Default compilation options are 
+
+CFLAGS=-O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99
+
+if you want to change them you can modify the Makefile in the build 
+directory or use
+
+make CFLAGS="what you want"
+
+Even if you remove all the warnings, please be sure to keep a 
+nontrivial optimization level (like -O2 or -O3) since otherwise 
+the codes will be much slower!
+
+-------------------------
+

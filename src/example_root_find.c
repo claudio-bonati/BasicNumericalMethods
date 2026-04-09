@@ -19,13 +19,15 @@ int main(void)
   const int maxiter=50;
   const double xacc=1.0e-12;
 
+  printf("solution with the bisection method\n");
   x1=0.8;
   x2=1.5;
   ris=bisection(&func, x1, x2, xacc, maxiter);
   printf("ris=%.15lf ; |ris-trueris|=%.15lf\n", ris, fabs(ris-1.0));
 
-  printf("\n\n\n");
+  printf("\n\n");
 
+  printf("solution with the secant method\n");
   x1=0.8;
   x2=1.5;
   ris=secant(&func, x1, x2, xacc, maxiter);
