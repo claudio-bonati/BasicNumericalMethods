@@ -5,7 +5,7 @@
 #include"../include/integration.h"
 
 /*
-Test to integration algorithms
+Test for integration algorithms
 */
 
 double func(double x)

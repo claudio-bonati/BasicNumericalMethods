@@ -5,7 +5,7 @@
 #include"../include/root_find.h"
 
 /*
-Test to check root finding algorithms
+Test for root finding algorithms
 */
 
 double func(double x)
