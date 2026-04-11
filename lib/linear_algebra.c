@@ -23,12 +23,6 @@ double scalprod(int n, double *v1, double *v2);
 // matrix-vector multiplication: ris = A * x
 void matvec_mult(int n, double *ris, double **A, double *x); 
 
-// matrix-matrix multiplication: ris = A * B
-void matmat_mult(int n, double **ris, double **A, double **B); 
-
-// matrix-matrix multiplication: ris = A^{t} * B
-void matdagmat_mult(int n, double **ris, double **A, double **B);
-
 // -----------------------
 
 // Gauss-Jordan elimination with full pivoting
@@ -194,7 +188,7 @@ void GaussSeidel(int n,       // size of the matrix
              }
            }
   
-        //x[i] = (b[i] - sum) / A[i][i];
+        x[i] = (b[i] - sum) / A[i][i];
 
         // // This is the modification needed for the Succesive Overrelaxation algorithm
         //double omega = 1.2; // tipicamente tra 1 e 2

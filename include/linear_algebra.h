@@ -65,46 +65,6 @@ inline void matvec_mult(int n, double *ris, double **A, double *x)
      }
   }
 
-// matrix-matrix multiplication: ris = A * B
-inline void matmat_mult(int n, double **ris, double **A,  double **B) 
-  {
-  int i, j, k;
-  double tmp;
-
-  for(i=0; i<n; i++) 
-     {
-     for(j=0; j<n; j++) 
-        {
-        tmp=0.0;
-        for(k=0; k<n; k++)
-           { 
-           tmp+=A[i][k]*B[k][j];
-           }
-        ris[i][j]=tmp;
-        }
-     }
-  }
-
-// matrix-matrix multiplication: ris = A^{t} * B
-inline void matdagmat_mult(int n, double **ris, double **A, double **B) 
-  {
-  int i, j, k;
-  double tmp;
-
-  for(i=0; i<n; i++) 
-     {
-     for(j=0; j<n; j++) 
-        {
-        tmp=0.0;
-        for(k=0; k<n; k++)
-           { 
-           tmp+=A[k][i]*B[k][j];
-           }
-        ris[i][j]=tmp;
-        }
-     }
-  }
-
 
 // Gauss-Jordan elimination with full pivoting
 // to solve Ax=b with A a matrix of size n
