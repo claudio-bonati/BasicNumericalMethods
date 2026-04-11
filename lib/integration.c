@@ -101,3 +101,6 @@ double richardson_for_int(double (*func)(double),  // function to be integrated
 
   return ris;
   }
+
+
+#undef DEBUG

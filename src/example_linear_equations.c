@@ -16,8 +16,8 @@ int main(void)
   int i, j;
   const int n = 10;
   double **A, *b, *x;
-  double **Acopy, *bcopy;
-  double tmp, test; 
+  double **Acopy, *bcopy, *auxvec;
+  double test; 
 
   // initialize the random number generator with the time
   srand((unsigned int)time(NULL));
@@ -58,8 +58,33 @@ int main(void)
 
   // allocate b, bcopy and x
   b=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(b == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
   bcopy=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(bcopy == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
   x=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(x == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  auxvec=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(auxvec == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+
+  printf("\n");
+  // ---------------------------------------
+  printf("Gauss-Jordan solver for random matrix\n");
 
   // initialize everything
   for(i=0; i<n; i++)
@@ -67,10 +92,55 @@ int main(void)
      for(j=0; j<n; j++)
         {
         A[i][j]=(double)((rand() % 20)-10); // integer random number in [-10, 10] converted in double
-        Acopy[i][j]=A[i][j];
         }
      b[i]=(double)((rand() % 20)-10);
-     bcopy[i]=b[i];
+     }
+  equal_mat(n, Acopy, A);  // Acopy=A
+  equal_vec(n, bcopy, b);  // bcopy=b
+
+  #ifdef DEBUG
+  printf("Matrice A\n");
+  for(i=0; i<n; i++)
+     { 
+     for(j=0; j<n; j++)
+        {
+        printf("%+3.0lf ", A[i][j]);
+        }
+     printf("\n");
+     }
+  printf("Vettore b\n"); 
+  for(i=0; i<n; i++) printf("%+3.0lf\n", b[i]);
+  #endif
+
+  // Gauss Jordan solution of Ax=b
+  GaussJordan_fullpivot(n, A, b, x);
+
+  // test the solution
+  matvec_mult(n, auxvec, Acopy, x); // auxvec=Acopy*x
+  minuseq_vec(n, auxvec, bcopy);    // auxvec-=bcopy
+  test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
+  printf("Test of Gauss-Jordan solution\n");
+  printf("|Ax-b|_1 = %lg\n", test);
+  printf("\n\n"); 
+
+  // ---------------------------------------
+  printf("Gauss-Seidel solver for tridiagonal matrix\n");
+
+  // to test Gauss-Seidel we use a specific matrix
+  for(i=0; i<n; i++)
+     {
+     A[i][i]=2.0;
+     if(i+1<n)
+       {
+       A[i+1][i]=-1.0;
+       A[i][i+1]=-1.0;
+       }
+     }
+
+  // and for b a random vector
+  for(i=0; i<n; i++)
+     {
+     b[i]=(double)((rand() % 20)-10);
      }
 
   #ifdef DEBUG
@@ -87,23 +157,14 @@ int main(void)
   for(i=0; i<n; i++) printf("%+3.0lf\n", b[i]);
   #endif
 
-
-  // Gauss Jordan solution of Ax=b
-  GaussJordan_fullpivot(n, A, b, x);
-
+  // Gauss-Seidel solution of Ax=b
+  GaussSeidel(n, A, b, x, 1.0e-7, 1000); 
+ 
   // test the solution
-  test=0.0;
-  for(i=0; i<n; i++)
-     {
-     tmp=0.0;
-     for(int j=0; j<n; j++)
-        {
-        tmp+=Acopy[i][j]*x[j];
-        }
-     tmp-=bcopy[i];
-     test+=fabs(tmp);
-     }
-  printf("Test of Gauss-Jordan solution\n");
+  matvec_mult(n, auxvec, A, x); // auxvec=A*x
+  minuseq_vec(n, auxvec, b);    // aux-=b
+  test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
+  printf("Test of Gauss-Seidel solution\n");
   printf("|Ax-b|_1 = %lg\n", test);
 
   // deallocate everything
@@ -117,6 +178,7 @@ int main(void)
   free(b);
   free(bcopy);
   free(x);
+  free(auxvec);
 
   return EXIT_SUCCESS;
   }

@@ -2,11 +2,43 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include"../include/linear_algebra.h"
+
+//#define DEBUG
+
+// inline functions defined in linear_algebra.h
+
+// vector assignement: out=in
+void equal_vec(int n, double *out, double *in);
+
+// vector -=: a-=b
+void minuseq_vec(int n, double *a, double *b);
+
+// matrix assignement: out=in
+void equal_mat(int n, double **out, double **in); 
+
+// scalar product of two vectors
+double scalprod(int n, double *v1, double *v2);
+
+// matrix-vector multiplication: ris = A * x
+void matvec_mult(int n, double *ris, double **A, double *x); 
+
+// matrix-matrix multiplication: ris = A * B
+void matmat_mult(int n, double **ris, double **A, double **B); 
+
+// matrix-matrix multiplication: ris = A^{t} * B
+void matdagmat_mult(int n, double **ris, double **A, double **B);
+
+// -----------------------
+
 // Gauss-Jordan elimination with full pivoting
 // to solve Ax=b with A a matrix of size n
 //
 // After use A->identity and b->permutation of x
-void GaussJordan_fullpivot(int n, double **A, double *b, double *x)
+void GaussJordan_fullpivot(int n,     // size of the matrix
+                           double **A, 
+                           double *b, 
+                           double *x)
   {
   int i, j, k, pivotrow, pivotcol, tmpindex;
   double max, tmp, pivot;
@@ -114,3 +146,86 @@ void GaussJordan_fullpivot(int n, double **A, double *b, double *x)
   free(colindex);
   }
 
+
+// Gauss-Seidel iterative solution of Ax=b with A a matrix of size n
+//
+// A and b stay constant in this function
+void GaussSeidel(int n,       // size of the matrix
+                 double **A, 
+                 double *b, 
+                 double *x,
+                 double accuracy, // elementwise accuracy
+                 int maxiter) // maximum number of iterations;
+  {
+  int i, j, iter;
+  double sum, err, diff;
+  double *x_old;
+  
+  x_old=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(x_old == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+
+  for(i=0; i<n; i++)
+     {
+     x[i]=0.0; // step zero, anything would work
+     }
+  
+  err=accuracy+1.0;
+  for(iter=0; iter<maxiter && err>accuracy; iter++) 
+     {
+     // store previous iteration
+     for(i=0; i<n; i++)
+        {
+        x_old[i]=x[i];
+        }  
+
+     // iteration
+     for(i=0; i<n; i++) 
+        {
+        sum = 0.0;
+        for(j=0; j<n; j++) 
+           {
+           if(j!=i)
+             {
+             sum += A[i][j] * x[j];
+             }
+           }
+  
+        //x[i] = (b[i] - sum) / A[i][i];
+
+        // // This is the modification needed for the Succesive Overrelaxation algorithm
+        //double omega = 1.2; // tipicamente tra 1 e 2
+        //x[i] = (1 - omega) * x[i] + omega * (b[i] - sum) / A[i][i];
+        }
+  
+     // check convergence (componentwise)
+     err = 0.0;
+     for(i=0; i<n; i++) 
+        {
+        diff = fabs(x[i] - x_old[i]);
+        if(diff>err)
+          {
+          err=diff;
+          }
+        }
+
+     #ifdef DEBUG
+     printf("Gauss-Seidel: iter=%d err=%g\n", iter, err);
+     #endif
+     }
+  
+  free(x_old);
+
+  if(iter==maxiter)
+    {
+    fprintf(stderr, "Reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  }
+
+
+
+#undef DEBUG

@@ -105,3 +105,5 @@ double secant(double (*func)(double),  // we want to solve func(x)=0, the functi
 
   return 1.0/0.0;
   }
+
+#undef DEBUG
