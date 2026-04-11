@@ -5,6 +5,8 @@
 
 #include"../include/linear_algebra.h"
 
+//#define DEBUG
+
 /*
 Test for the linear solvers
 */
@@ -12,7 +14,7 @@ Test for the linear solvers
 int main(void)
   {
   int i, j;
-  const int n = 3;
+  const int n = 10;
   double **A, *b, *x;
   double **Acopy, *bcopy;
   double tmp, test; 
@@ -64,12 +66,27 @@ int main(void)
      {
      for(j=0; j<n; j++)
         {
-        A[i][j]=(double)(rand() % 10); // integer random number in [0, 10] converted in double
+        A[i][j]=(double)((rand() % 20)-10); // integer random number in [-10, 10] converted in double
         Acopy[i][j]=A[i][j];
         }
-     b[i]=(double)(rand() % 20);
+     b[i]=(double)((rand() % 20)-10);
      bcopy[i]=b[i];
      }
+
+  #ifdef DEBUG
+  printf("Matrice A\n");
+  for(i=0; i<n; i++)
+     { 
+     for(j=0; j<n; j++)
+        {
+        printf("%+3.0lf ", A[i][j]);
+        }
+     printf("\n");
+     }
+  printf("Vettore b\n"); 
+  for(i=0; i<n; i++) printf("%+3.0lf\n", b[i]);
+  #endif
+
 
   // Gauss Jordan solution of Ax=b
   GaussJordan_fullpivot(n, A, b, x);
