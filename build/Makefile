@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99 
 
 binaries= example_integration \
-	example_linear_equations \
+	example_linear_algebra \
 	example_root_find \
 	test_double \
 	test_float 
@@ -13,9 +13,9 @@ example_integration: ../src/example_integration.c integration.o
 	$(CC) $(CFLAGS) -c ../src/example_integration.c 
 	$(CC) $(CFLAGS) integration.o example_integration.o -o $@ -lm 
 
-example_linear_equations: ../src/example_linear_equations.c linear_algebra.o
-	$(CC) $(CFLAGS) -c ../src/example_linear_equations.c 
-	$(CC) $(CFLAGS) linear_algebra.o example_linear_equations.o -o $@ -lm 
+example_linear_algebra: ../src/example_linear_algebra.c linear_algebra.o
+	$(CC) $(CFLAGS) -c ../src/example_linear_algebra.c 
+	$(CC) $(CFLAGS) linear_algebra.o example_linear_algebra.o -o $@ -lm 
 
 example_root_find: ../src/example_root_find.c root_find.o
 	$(CC) $(CFLAGS) -c ../src/example_root_find.c 

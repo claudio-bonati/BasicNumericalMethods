@@ -142,6 +142,7 @@ void GaussJordan_fullpivot(int n,     // size of the matrix
 
 
 // Gauss-Seidel iterative solution of Ax=b with A a matrix of size n
+// (work for sure if A is symmetric and positive defined)
 //
 // A and b stay constant in this function
 void GaussSeidel(int n,       // size of the matrix
@@ -190,8 +191,8 @@ void GaussSeidel(int n,       // size of the matrix
   
         x[i] = (b[i] - sum) / A[i][i];
 
-        // // This is the modification needed for the Succesive Overrelaxation algorithm
-        //double omega = 1.2; // tipicamente tra 1 e 2
+        //// This is the modification needed for the Succesive Overrelaxation algorithm
+        //double omega = 1.2; // typically between 1 and 2
         //x[i] = (1 - omega) * x[i] + omega * (b[i] - sum) / A[i][i];
         }
   
@@ -221,5 +222,93 @@ void GaussSeidel(int n,       // size of the matrix
   }
 
 
+// conjugate gradient solver of Ax=b with A a positive defined matrix of size n
+//
+// A and b stay constant in this function
+void conjugate_gradient(int n,      // size of the matrix
+                        double **A, 
+                        double *b, 
+                        double *x, 
+                        double accuracy,  // accuracy of the solution: ||r_k||<accuracy
+                        int maxiter)      // maximun number of iterations
+  {
+  int i, iter;
+  double rs_new, rs_old, alpha;
+  double *r, *p, *Ap;
+  
+  r=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(r == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  p=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(p == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  Ap=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(Ap == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+
+  matvec_mult(n, r, A, x);  // r=A*x
+  for(i=0; i<n;i++) 
+     {
+     r[i]=b[i]-r[i];   
+     p[i]=r[i];
+     }
+  // now p = r = b - A*x
+ 
+  rs_old = scalprod(n, r, r);
+  #ifdef DEBUG
+  printf("iter=-1, rs=%g\n", rs_old);
+  #endif
+  
+  for(iter=0; iter<maxiter && sqrt(rs_old)>accuracy; iter++) 
+     {
+     matvec_mult(n, Ap, A, p);  // Ap=A*p
+
+     alpha = rs_old / scalprod(n, p, Ap);
+  
+     // x = x + alpha * p
+     for(i=0; i<n; i++)
+        {
+        x[i] += alpha * p[i];
+        }
+  
+     // r = r - alpha * Ap
+     for(i=0; i<n; i++)
+        {
+        r[i] -= alpha * Ap[i];
+        }
+  
+     rs_new = scalprod(n, r, r);
+     #ifdef DEBUG
+     printf("iter=%d, rs=%g\n", iter, rs_new);
+     #endif
+  
+     // p = r + (rs_new / rs_old) * p
+     for(i=0; i<n; i++)
+        {
+        p[i] = r[i] + (rs_new / rs_old) * p[i];
+        }
+  
+     rs_old = rs_new;
+     }
+
+  free(r);
+  free(p);
+  free(Ap);
+
+  if(iter==maxiter)
+    {
+    fprintf(stderr, "Reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  }
 
 #undef DEBUG

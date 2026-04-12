@@ -86,5 +86,18 @@ void GaussSeidel(int n,       // size of the matrix
                  double accuracy, // elementwise accuracy
                  int maxiter); // maximum number of iterations;
 
+
+// conjugate gradient solver of Ax=b with A a positive defined matrix of size n
+//
+// A and b stay constant in this function
+void conjugate_gradient(int n,      // size of the matrix
+                        double **A, 
+                        double *b, 
+                        double *x, 
+                        double accuracy,  // accuracy of the solution: ||r_k||<accuracy
+                        int maxiter);     // maximun number of iterations
+
+
+
 #endif
 

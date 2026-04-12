@@ -83,6 +83,7 @@ int main(void)
     }
 
   printf("\n");
+
   // ---------------------------------------
   printf("Gauss-Jordan solver for random matrix\n");
 
@@ -99,7 +100,7 @@ int main(void)
   equal_vec(n, bcopy, b);  // bcopy=b
 
   #ifdef DEBUG
-  printf("Matrice A\n");
+  printf("Matrix A\n");
   for(i=0; i<n; i++)
      { 
      for(j=0; j<n; j++)
@@ -108,7 +109,7 @@ int main(void)
         }
      printf("\n");
      }
-  printf("Vettore b\n"); 
+  printf("Vector b\n"); 
   for(i=0; i<n; i++) printf("%+3.0lf\n", b[i]);
   #endif
 
@@ -120,7 +121,7 @@ int main(void)
   minuseq_vec(n, auxvec, bcopy);    // auxvec-=bcopy
   test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
   printf("Test of Gauss-Jordan solution\n");
-  printf("|Ax-b|_1 = %lg\n", test);
+  printf("|Ax-b|_2 = %g\n", test);
   printf("\n\n"); 
 
   // ---------------------------------------
@@ -165,8 +166,39 @@ int main(void)
   minuseq_vec(n, auxvec, b);    // aux-=b
   test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
   printf("Test of Gauss-Seidel solution\n");
-  printf("|Ax-b|_1 = %lg\n", test);
+  printf("|Ax-b|_2 = %g\n", test);
+  printf("\n\n"); 
 
+  // ---------------------------------------
+  printf("Conjugate gradient solver for tridiagonal matrix\n");
+
+  // same matrix as for Gauss-Seidel
+
+  #ifdef DEBUG
+  printf("Matrice A\n");
+  for(i=0; i<n; i++)
+     { 
+     for(j=0; j<n; j++)
+        {
+        printf("%+3.0lf ", A[i][j]);
+        }
+     printf("\n");
+     }
+  printf("Vettore b\n"); 
+  for(i=0; i<n; i++) printf("%+3.0lf\n", b[i]);
+  #endif
+
+  conjugate_gradient(n, A, b, x, 1.0e-7, 200); 
+
+  // test the solution
+  matvec_mult(n, auxvec, A, x); // auxvec=A*x
+  minuseq_vec(n, auxvec, b);    // aux-=b
+  test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
+  printf("Test of conjugate gradient solution\n");
+  printf("|Ax-b|_2 = %g\n", test);
+  printf("\n\n"); 
+
+  // ------------------------------- 
   // deallocate everything
   for(i=0; i<n; i++)
      {
