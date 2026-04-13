@@ -113,8 +113,8 @@ int main(void)
   maxeig_power(n, A, &eigvalue, x, 1.0e-7, 1000);
 
   // test the solution
-  printf("eig      = %.12lf\n", eigvalue);
-  printf("analytic = %.12lf\n", 4.0*pow(sin(pi*(double)n/(2.0*(double)(n+1))),2.0));
+  printf("eig = %.12lf\n", eigvalue);
+  printf("|eig-trueig| = %g\n", fabs(eigvalue-4.0*pow(sin(pi*(double)n/(2.0*(double)(n+1))),2.0)));
   printf("\n\n"); 
 
   // all the eigenvalues of the discrete second derivative 
@@ -141,8 +141,9 @@ int main(void)
   // maximum eigenvalue using power iterations
   mineig_power(n, A, &eigvalue, x, 1.0e-7, 1000);
 
-  printf("eig      = %.12lf\n", eigvalue);
-  printf("analytic = %.12lf\n", 4.0*pow(sin(pi/(2.0*(double)(n+1))),2.0));
+  printf("eig = %.12lf\n", eigvalue);
+  printf("|eig-trueig| = %g\n", fabs(eigvalue-4.0*pow(sin(pi/(2.0*(double)(n+1))),2.0)));
+
   printf("\n\n"); 
 
   // ---------------------------------------
@@ -162,14 +163,14 @@ int main(void)
 
   Jacobi_diag(n, A, eigvals, eigvecs, 1.0e-7, 1000); 
 
-  printf("eig[0]   = %.12lf\n", eigvals[0]);
-  printf("analytic = %.12lf\n", 4.0*pow(sin(pi/(2.0*(double)(n+1))),2.0));
+  printf("eig[0] = %.12lf\n", eigvals[0]);
+  printf("|eig-trueig| = %g\n", fabs(eigvals[0]-4.0*pow(sin(pi/(2.0*(double)(n+1))),2.0)));
   printf("\n"); 
-  printf("eig[1]   = %.12lf\n", eigvals[1]);
-  printf("analytic = %.12lf\n", 4.0*pow(sin(pi*2.0/(2.0*(double)(n+1))),2.0));
+  printf("eig[1] = %.12lf\n", eigvals[1]);
+  printf("|eig-trueig| = %g\n", fabs(eigvals[1]-4.0*pow(sin(pi*2.0/(2.0*(double)(n+1))),2.0)));
   printf("\n"); 
   printf("eig[n-1] = %.12lf\n", eigvals[n-1]);
-  printf("analytic = %.12lf\n", 4.0*pow(sin(pi*(double)n/(2.0*(double)(n+1))),2.0));
+  printf("|eig-trueig| = %g\n", fabs(eigvals[n-1]-4.0*pow(sin(pi*(double)n/(2.0*(double)(n+1))),2.0)));
   printf("\n\n"); 
 
 
