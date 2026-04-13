@@ -308,7 +308,7 @@ void conjugate_gradient(int n,      // size of the matrix
 
   if(iter==maxiter)
     {
-    fprintf(stderr, "CG: eached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    fprintf(stderr, "CG: reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
   }
@@ -471,6 +471,157 @@ void mineig_power(int n,      // size of the matrix
     exit(EXIT_FAILURE);
     }
   }
+
+/// ----------------------- ///
+
+// Auxilliary function to find the largest (in absolute value) off diagonal element (position p, q)
+void max_offdiag(int n, double **A, int *p, int *q) 
+  {
+  int i, j; 
+  double max = 0.0;
+  
+  *p = 0; 
+  *q = 1;
+
+  for(i=0; i<n; i++) 
+     {
+     for(j=i+1; j<n; j++) 
+        {
+        if(fabs(A[i][j]) > fabs(max)) 
+          {
+          max = A[i][j];
+          *p = i;
+          *q = j;
+          }
+        }
+     }
+  }
+
+void sort_eigenpairs(int n, double *eigenvalues, double **V) 
+  {
+  int i, j, k, min_idx;
+  double temp;
+
+  for(i=0; i<n-1; i++) 
+     {
+     min_idx = i;
+     for(j=i+1; j<n; j++) 
+        {
+        if(eigenvalues[j] < eigenvalues[min_idx])
+          {
+          min_idx = j;
+          }
+        }
+
+     // Swap eigenvalues
+     temp = eigenvalues[i];
+     eigenvalues[i] = eigenvalues[min_idx];
+     eigenvalues[min_idx] = temp;
+
+     // Swap corresponding eigenvectors (columns)
+     for(k=0; k<n; k++) 
+        {
+        temp = V[k][i];
+        V[k][i] = V[k][min_idx];
+        V[k][min_idx] = temp;
+        }
+     }
+  }
+
+
+// Diagonalization with Jacobi method
+//
+// at the end of the algorithm A is diagonal 
+void Jacobi_diag(int n, 
+                 double **A, 
+                 double *eigvals,
+                 double **V, 
+                 double accuracy,
+                 int maxiter) 
+  {
+  int i, j, iter, p, q;
+  double theta, c, s, App, Aqq, Apq, Aip, Aiq, Vip, Viq;
+  const double pi=3.141592653589793238462643383279502;
+
+  // initalize V to identity
+  for(i=0; i<n; i++)
+     {
+     for(j=0; j<n; j++)
+        {
+        V[i][j]=0.0;
+        }
+     }
+  for(i=0; i<n; i++) V[i][i]=1.0;
+
+  for(iter=0; iter<maxiter; iter++)
+     {
+     max_offdiag(n, A, &p, &q);
+
+     if(fabs(A[p][q]) < accuracy)
+       {
+       break;
+       }
+
+     if(A[p][p] == A[q][q])
+       {
+       theta = pi / 4.0;
+       }
+     else
+       {
+       theta = 0.5 * atan2(2.0*A[p][q], A[q][q]-A[p][p]);
+       }
+
+     c = cos(theta);
+     s = sin(theta);
+
+     App = A[p][p];
+     Aqq = A[q][q];
+     Apq = A[p][q];
+
+     // Update diagonal elements
+     A[p][p] = c*c*App - 2.0*s*c*Apq + s*s*Aqq;
+     A[q][q] = s*s*App + 2.0*s*c*Apq + c*c*Aqq;
+     A[p][q] = A[q][p] = 0.0;
+
+     // Update other elements
+     for(i=0; i<n; i++) 
+        {
+        if(i!=p && i!=q) 
+          {
+          Aip = A[i][p];
+          Aiq = A[i][q];
+
+          A[i][p] = c*Aip - s*Aiq;
+          A[p][i] = A[i][p];
+
+          A[i][q] = s*Aip + c*Aiq;
+          A[q][i] = A[i][q];
+          }
+        }
+
+     // Update eigenvectors
+     for(i=0; i<n; i++) 
+        {
+        Vip = V[i][p];
+        Viq = V[i][q];
+
+        V[i][p] = c*Vip - s*Viq;
+        V[i][q] = s*Vip + c*Viq;
+        }
+     }
+
+  if(iter==maxiter)
+    {
+    fprintf(stderr, "Jacobi_diag: reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+
+  for(i=0; i<n; i++) eigvals[i]=A[i][i]; 
+
+  sort_eigenpairs(n, eigvals, V);
+  }
+
+
 
 
 #undef DEBUG

@@ -14,10 +14,10 @@ Test for eigensolvers
 int main(void)
   {
   int i, j;
-  const int n = 30;
+  const int n = 10;
   double **A, *x;
-  double eigvalue; 
-  const double pi=3.141592653589793238462643383279502884197169399375105820;
+  double eigvalue, *eigvals, **eigvecs; 
+  const double pi=3.141592653589793238462643383279502;
 
   // initialize the random number generator with the time
   srand((unsigned int)time(NULL));
@@ -39,6 +39,23 @@ int main(void)
        }
      }
 
+  // allocate eigvecs
+  eigvecs=(double **)malloc((unsigned long int)(n)*sizeof(double*));
+  if(eigvecs == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  for(i=0; i<n; i++)
+     {
+     eigvecs[i]=(double *)malloc((unsigned long int)(n)*sizeof(double));
+     if(eigvecs[i] == NULL)
+       {
+       fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+       exit(EXIT_FAILURE);
+       }
+     }
+
   // allocate x 
   x=(double *)malloc((unsigned long int)(n)*sizeof(double));
   if(x == NULL)
@@ -46,6 +63,16 @@ int main(void)
     fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
+
+  // allocate eigvals
+  eigvals=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(x == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+
+
 
   // initialize A with a tridiagonal matrix
   for(i=0; i<n; i++)
@@ -118,15 +145,46 @@ int main(void)
   printf("analytic = %.12lf\n", 4.0*pow(sin(pi/(2.0*(double)(n+1))),2.0));
   printf("\n\n"); 
 
+  // ---------------------------------------
+  printf("Diagonalization with Jacobi of tridiagonal matrix\n");
+
+  #ifdef DEBUG
+  printf("Matrix A\n");
+  for(i=0; i<n; i++)
+     { 
+     for(j=0; j<n; j++)
+        {
+        printf("%+3.0lf ", A[i][j]);
+        }
+     printf("\n");
+     }
+  #endif
+
+  Jacobi_diag(n, A, eigvals, eigvecs, 1.0e-7, 1000); 
+
+  printf("eig[0]   = %.12lf\n", eigvals[0]);
+  printf("analytic = %.12lf\n", 4.0*pow(sin(pi/(2.0*(double)(n+1))),2.0));
+  printf("\n"); 
+  printf("eig[1]   = %.12lf\n", eigvals[1]);
+  printf("analytic = %.12lf\n", 4.0*pow(sin(pi*2.0/(2.0*(double)(n+1))),2.0));
+  printf("\n"); 
+  printf("eig[n-1] = %.12lf\n", eigvals[n-1]);
+  printf("analytic = %.12lf\n", 4.0*pow(sin(pi*(double)n/(2.0*(double)(n+1))),2.0));
+  printf("\n\n"); 
+
 
   // ------------------------------- 
   // deallocate everything
   for(i=0; i<n; i++)
      {
      free(A[i]);
+     free(eigvecs[i]);
      }
   free(A);
+  free(eigvecs);
   free(x);
+  free(eigvals);
+
 
   return EXIT_SUCCESS;
   }

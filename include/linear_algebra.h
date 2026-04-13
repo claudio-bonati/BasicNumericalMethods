@@ -112,12 +112,20 @@ void maxeig_power(int n,      // size of the matrix
                   double accuracy,  // accuracy of the eigenvalue
                   int maxiter);     // maximun number of iterations
 
+
 void mineig_power(int n,      // size of the matrix
                   double **A, 
                   double *eigvalue,
                   double *eigvector,
                   double accuracy,  // accuracy of the eigenvalue
                   int maxiter);     // maximun number of iterations
+
+void Jacobi_diag(int n, 
+                 double **A, 
+                 double *eigvals,
+                 double **V, 
+                 double accuracy,
+                 int maxiter); 
 
 
 #endif
