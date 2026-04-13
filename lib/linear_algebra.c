@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include<time.h>
+
 
 #include"../include/linear_algebra.h"
 
@@ -159,7 +161,7 @@ void GaussSeidel(int n,       // size of the matrix
   x_old=(double *)malloc((unsigned long int)(n)*sizeof(double));
   if(x_old == NULL)
     {
-    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    fprintf(stderr, "GS: allocation problem (%s, %d)\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
 
@@ -208,7 +210,7 @@ void GaussSeidel(int n,       // size of the matrix
         }
 
      #ifdef DEBUG
-     printf("Gauss-Seidel: iter=%d err=%g\n", iter, err);
+     printf("GS: iter=%d err=%g\n", iter, err);
      #endif
      }
   
@@ -216,7 +218,7 @@ void GaussSeidel(int n,       // size of the matrix
 
   if(iter==maxiter)
     {
-    fprintf(stderr, "Reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    fprintf(stderr, "GS: reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
   }
@@ -239,19 +241,19 @@ void conjugate_gradient(int n,      // size of the matrix
   r=(double *)malloc((unsigned long int)(n)*sizeof(double));
   if(r == NULL)
     {
-    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    fprintf(stderr, "CG: allocation problem (%s, %d)\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
   p=(double *)malloc((unsigned long int)(n)*sizeof(double));
   if(p == NULL)
     {
-    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    fprintf(stderr, "CG: allocation problem (%s, %d)\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
   Ap=(double *)malloc((unsigned long int)(n)*sizeof(double));
   if(Ap == NULL)
     {
-    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    fprintf(stderr, "CG: allocation problem (%s, %d)\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
 
@@ -265,7 +267,7 @@ void conjugate_gradient(int n,      // size of the matrix
  
   rs_old = scalprod(n, r, r);
   #ifdef DEBUG
-  printf("iter=-1, rs=%g\n", rs_old);
+  printf("CG: iter=-1, rs=%g\n", sqrt(rs_old));
   #endif
   
   for(iter=0; iter<maxiter && sqrt(rs_old)>accuracy; iter++) 
@@ -288,7 +290,7 @@ void conjugate_gradient(int n,      // size of the matrix
   
      rs_new = scalprod(n, r, r);
      #ifdef DEBUG
-     printf("iter=%d, rs=%g\n", iter, rs_new);
+     printf("CG: iter=%d, rs=%g\n", iter, sqrt(rs_new));
      #endif
   
      // p = r + (rs_new / rs_old) * p
@@ -306,9 +308,169 @@ void conjugate_gradient(int n,      // size of the matrix
 
   if(iter==maxiter)
     {
-    fprintf(stderr, "Reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    fprintf(stderr, "CG: eached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
   }
+
+
+// ------------------------
+
+// determine the eigenvalue with maximum absolute value and its the corresponding eigenvector
+// using the power method (A stays constant)
+void maxeig_power(int n,      // size of the matrix
+                  double **A, 
+                  double *eigvalue,
+                  double *eigvector,
+                  double accuracy,  // accuracy of the eigenvalue
+                  int maxiter)      // maximun number of iterations
+  {
+  int i, iter;  
+  double norm, err, old, new;
+  double *Ax;
+
+  Ax=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(Ax == NULL)
+    {
+    fprintf(stderr, "MaxEigPow: allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+
+  // initialize the random number generator with the time
+  srand((unsigned int)time(NULL));
+ 
+  // initialize eigvector with random numbers in [-10,10]
+  for(i=0; i<n; i++)
+     {
+     eigvector[i]=(double)((rand() % 20)-10);
+     }
+  norm=sqrt(scalprod(n, eigvector, eigvector));
+  for(i=0; i<n; i++)
+     {
+     eigvector[i]/=norm;
+     }
+  // now \|eigvector\|=1
+
+  iter=0;
+  do
+     {
+     matvec_mult(n, Ax, A, eigvector);   // Ax=A*eigvector
+
+     new=scalprod(n, eigvector, Ax); // new=<eigvector, Ax>
+     #ifdef DEBUG
+     printf("MaxEigPow: iter=%d ; eigvalue=%.12lf\n", iter, new);
+     #endif
+  
+     if(iter==0)
+       {
+       err=1.0;
+       }
+     else
+       {
+       err=fabs(new-old);
+       }
+
+     norm=sqrt(scalprod(n, Ax, Ax));
+     for(i=0; i<n; i++)
+        {
+        eigvector[i]=Ax[i]/norm;  // now eigvector = Ax / \|Ax\|
+        }
+
+     old=new;
+     iter++;
+     }
+  while(iter<maxiter && err>accuracy);
+
+  *eigvalue=new; 
+
+  free(Ax);
+  
+  if(iter==maxiter)
+    {
+    fprintf(stderr, "MaxEigPow: reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  }
+
+
+// determine the eigenvalue with minimum absolute value and its the corresponding eigenvector
+// using the inverse power method (A stays constant)
+void mineig_power(int n,      // size of the matrix
+                  double **A, 
+                  double *eigvalue,
+                  double *eigvector,
+                  double accuracy,  // accuracy of the eigenvalue
+                  int maxiter)      // maximun number of iterations
+  {
+  int i, iter;  
+  double norm, err, old, new;
+  double *Ax;
+
+  Ax=(double *)malloc((unsigned long int)(n)*sizeof(double));
+  if(Ax == NULL)
+    {
+    fprintf(stderr, "MinEigPow: allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+
+  // initialize the random number generator with the time
+  srand((unsigned int)time(NULL));
+ 
+  // initialize eigvector with random numbers in [-10,10]
+  for(i=0; i<n; i++)
+     {
+     eigvector[i]=(double)((rand() % 20)-10);
+     }
+  norm=sqrt(scalprod(n, eigvector, eigvector));
+  for(i=0; i<n; i++)
+     {
+     eigvector[i]/=norm;
+     }
+  // now \|eigvector\|=1
+
+  iter=0;
+  do
+     {
+     conjugate_gradient(n, A, eigvector, Ax, 1.0e-10, 1000); // Ax = A^{-1}*eigvector
+     // note that the starting point of the solution
+     // is the solution at the previous iteration, 
+     // which makes CG converge faster
+
+     new=1.0/scalprod(n, eigvector, Ax); // new=<eigvector, Ax>
+     #ifdef DEBUG
+     printf("MinEigPow: iter=%d ; eigvalue=%.12lf\n", iter, new);
+     #endif
+  
+     if(iter==0)
+       {
+       err=1.0;
+       }
+     else
+       {
+       err=fabs(new-old);
+       }
+
+     norm=sqrt(scalprod(n, Ax, Ax));
+     for(i=0; i<n; i++)
+        {
+        eigvector[i]=Ax[i]/norm;  // now eigvector = Ax / \|Ax\|
+        }
+
+     old=new;
+     iter++;
+     }
+  while(iter<maxiter && err>accuracy);
+
+  *eigvalue=new; 
+
+  free(Ax);
+ 
+  if(iter==maxiter)
+    {
+    fprintf(stderr, "MinEigPow: reached maxiter=%d in (%s, %d)\n", maxiter, __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+    }
+  }
+
 
 #undef DEBUG

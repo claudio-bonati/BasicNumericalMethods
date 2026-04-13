@@ -130,6 +130,13 @@ int main(void)
   // to test Gauss-Seidel we use a specific matrix
   for(i=0; i<n; i++)
      {
+     for(j=0; j<n; j++)
+        {
+        A[i][j]=0.0;
+        }
+     }
+  for(i=0; i<n; i++)
+     {
      A[i][i]=2.0;
      if(i+1<n)
        {
@@ -187,6 +194,12 @@ int main(void)
   printf("Vettore b\n"); 
   for(i=0; i<n; i++) printf("%+3.0lf\n", b[i]);
   #endif
+
+  // set x to zero (at this point x is the solution already obtained with GS!)
+  for(i=0; i<n; i++)
+     {
+     x[i]=0.0;
+     }
 
   conjugate_gradient(n, A, b, x, 1.0e-7, 200); 
 

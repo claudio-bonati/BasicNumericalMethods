@@ -46,7 +46,9 @@ inline double scalprod(int n, double *v1, double *v2)
   double ris = 0.0;
 
   for(i=0; i<n; i++)
-      ris += v1[i] * v2[i];
+     {
+     ris += v1[i] * v2[i];
+     }
   return ris;
   }
 
@@ -65,6 +67,7 @@ inline void matvec_mult(int n, double *ris, double **A, double *x)
      }
   }
 
+// ---------------------------
 
 // Gauss-Jordan elimination with full pivoting
 // to solve Ax=b with A a matrix of size n
@@ -97,6 +100,24 @@ void conjugate_gradient(int n,      // size of the matrix
                         double accuracy,  // accuracy of the solution: ||r_k||<accuracy
                         int maxiter);     // maximun number of iterations
 
+// ----------------------
+
+
+// determine the eigenvalue with maximum absolute value and its the corresponding eigenvector
+// using the power method (A stays constant)
+void maxeig_power(int n,      // size of the matrix
+                  double **A, 
+                  double *eigvalue,
+                  double *eigvector,
+                  double accuracy,  // accuracy of the eigenvalue
+                  int maxiter);     // maximun number of iterations
+
+void mineig_power(int n,      // size of the matrix
+                  double **A, 
+                  double *eigvalue,
+                  double *eigvector,
+                  double accuracy,  // accuracy of the eigenvalue
+                  int maxiter);     // maximun number of iterations
 
 
 #endif

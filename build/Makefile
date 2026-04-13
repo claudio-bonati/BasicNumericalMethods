@@ -4,6 +4,7 @@ CFLAGS=-O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99
 binaries= example_integration \
 	example_linear_equations \
 	example_root_find \
+        example_spectrum \
 	test_double \
 	test_float 
 
@@ -20,6 +21,10 @@ example_linear_equations: ../src/example_linear_equations.c linear_algebra.o
 example_root_find: ../src/example_root_find.c root_find.o
 	$(CC) $(CFLAGS) -c ../src/example_root_find.c 
 	$(CC) $(CFLAGS) root_find.o example_root_find.o -o $@ -lm 
+
+example_spectrum: ../src/example_spectrum.c linear_algebra.o
+	$(CC) $(CFLAGS) -c ../src/example_spectrum.c 
+	$(CC) $(CFLAGS) linear_algebra.o example_spectrum.o -o $@ -lm 
 
 integration.o: ../lib/integration.c ../include/integration.h
 	$(CC) $(CFLAGS) -c ../lib/integration.c 
