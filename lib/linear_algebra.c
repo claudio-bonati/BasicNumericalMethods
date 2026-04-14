@@ -3,7 +3,6 @@
 #include <math.h>
 #include<time.h>
 
-
 #include"../include/linear_algebra.h"
 
 //#define DEBUG
@@ -74,7 +73,7 @@ void GaussJordan_fullpivot(int n,     // size of the matrix
             }  
          }
   
-      if(fabs(max) < accuracy)
+      if(fabs(max) <= accuracy)
         {
         fprintf(stderr, "Matrix is (nearly) singular (%s, %d)\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
@@ -231,7 +230,7 @@ void conjugate_gradient(int n,      // size of the matrix
                         double **A, 
                         double *b, 
                         double *x, 
-                        double accuracy,  // accuracy of the solution: ||r_k||<accuracy
+                        double accuracy,  // accuracy of the solution: ||r_k||<= accuracy
                         int maxiter)      // maximun number of iterations
   {
   int i, iter;
@@ -497,6 +496,11 @@ void max_offdiag(int n, double **A, int *p, int *q)
      }
   }
 
+
+// to sort eivenalues at the end of Jacobi diagonalization:
+// column V[][i] is the eigenvector corresponging to eigenvalues[i]
+// eigenvalues are sorted according to
+// eigenvalues[0] <= eigenvalues[1] <= ...
 void sort_eigenpairs(int n, double *eigenvalues, double **V) 
   {
   int i, j, k, min_idx;
@@ -557,7 +561,7 @@ void Jacobi_diag(int n,
      {
      max_offdiag(n, A, &p, &q);
 
-     if(fabs(A[p][q]) < accuracy)
+     if(fabs(A[p][q]) <= accuracy)
        {
        break;
        }
