@@ -76,7 +76,8 @@ inline void matvec_mult(int n, double *ris, double **A, double *x)
 void GaussJordan_fullpivot(int n,     // size of the matrix
                            double **A, 
                            double *b, 
-                           double *x);
+                           double *x,
+                           double accuracy); // maximum absolute size of out diagonal elements
 
 
 // Gauss-Seidel iterative solution of Ax=b with A a matrix of size n

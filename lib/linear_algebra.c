@@ -34,11 +34,11 @@ void matvec_mult(int n, double *ris, double **A, double *x);
 void GaussJordan_fullpivot(int n,     // size of the matrix
                            double **A, 
                            double *b, 
-                           double *x)
+                           double *x,
+                           double accuracy) // maximum absolute size of out diagonal elements
   {
   int i, j, k, pivotrow, pivotcol, tmpindex;
   double max, tmp, pivot;
-  const double epsilon=1.0e-12;
   int *colindex; // to track column swaps
 
   colindex=(int *)malloc((unsigned long int)(n)*sizeof(int));
@@ -74,7 +74,7 @@ void GaussJordan_fullpivot(int n,     // size of the matrix
             }  
          }
   
-      if(fabs(max) < epsilon)
+      if(fabs(max) < accuracy)
         {
         fprintf(stderr, "Matrix is (nearly) singular (%s, %d)\n", __FILE__, __LINE__);
         exit(EXIT_FAILURE);
@@ -513,12 +513,12 @@ void sort_eigenpairs(int n, double *eigenvalues, double **V)
           }
         }
 
-     // Swap eigenvalues
+     // swap eigenvalues
      temp = eigenvalues[i];
      eigenvalues[i] = eigenvalues[min_idx];
      eigenvalues[min_idx] = temp;
 
-     // Swap corresponding eigenvectors (columns)
+     // swap eigenvectors (columns of V)
      for(k=0; k<n; k++) 
         {
         temp = V[k][i];

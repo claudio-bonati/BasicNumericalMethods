@@ -114,7 +114,7 @@ int main(void)
   #endif
 
   // Gauss Jordan solution of Ax=b
-  GaussJordan_fullpivot(n, A, b, x);
+  GaussJordan_fullpivot(n, A, b, x, 1.0e-10);
 
   // test the solution
   matvec_mult(n, auxvec, Acopy, x); // auxvec=Acopy*x
