@@ -473,7 +473,7 @@ void mineig_power(int n,      // size of the matrix
 
 /// ----------------------- ///
 
-// Auxilliary function to find the largest (in absolute value) off diagonal element (position p, q)
+// auxilliary function to find the largest (in absolute value) off diagonal element (position p, q)
 void max_offdiag(int n, double **A, int *p, int *q) 
   {
   int i, j; 
@@ -497,8 +497,8 @@ void max_offdiag(int n, double **A, int *p, int *q)
   }
 
 
-// to sort eivenalues at the end of Jacobi diagonalization:
-// column V[][i] is the eigenvector corresponging to eigenvalues[i]
+// to sort eigvenalues at the end of Jacobi diagonalization:
+// column V[:][i] is the eigenvector corresponging to eigenvalues[i]
 // eigenvalues are sorted according to
 // eigenvalues[0] <= eigenvalues[1] <= ...
 void sort_eigenpairs(int n, double *eigenvalues, double **V) 
@@ -536,12 +536,14 @@ void sort_eigenpairs(int n, double *eigenvalues, double **V)
 // Diagonalization with Jacobi method
 //
 // at the end of the algorithm A is diagonal 
-void Jacobi_diag(int n, 
+// eigvals are sorted in such a way that eigvals[0]<=eigvals[1]<=eigvals[2]<=...
+// and V[:][i] is the eigenvector corresponfing to eigvals[i]
+void Jacobi_diag(int n, // size of the matrix
                  double **A, 
                  double *eigvals,
-                 double **V, 
-                 double accuracy,
-                 int maxiter) 
+                 double **V,      
+                 double accuracy, // maximum value for off diagonal elements
+                 int maxiter)     // maximum number of iterations
   {
   int i, j, iter, p, q;
   double theta, c, s, App, Aqq, Apq, Aip, Aiq, Vip, Viq;
@@ -583,8 +585,9 @@ void Jacobi_diag(int n,
      Apq = A[p][q];
 
      // Update diagonal elements
-     A[p][p] = c*c*App - 2.0*s*c*Apq + s*s*Aqq;
-     A[q][q] = s*s*App + 2.0*s*c*Apq + c*c*Aqq;
+     A[q][q] = c*c*Aqq + s*s*App  + 2.0*s*c*Apq ;
+     A[p][p] = s*s*Aqq + c*c*App  - 2.0*s*c*Apq ;
+
      A[p][q] = A[q][p] = 0.0;
 
      // Update other elements
@@ -595,11 +598,11 @@ void Jacobi_diag(int n,
           Aip = A[i][p];
           Aiq = A[i][q];
 
-          A[i][p] = c*Aip - s*Aiq;
-          A[p][i] = A[i][p];
-
-          A[i][q] = s*Aip + c*Aiq;
+          A[i][q] = c*Aiq + s*Aip;
           A[q][i] = A[i][q];
+
+          A[i][p] = - s*Aiq + c*Aip;
+          A[p][i] = A[i][p];
           }
         }
 
@@ -609,8 +612,8 @@ void Jacobi_diag(int n,
         Vip = V[i][p];
         Viq = V[i][q];
 
-        V[i][p] = c*Vip - s*Viq;
-        V[i][q] = s*Vip + c*Viq;
+        V[i][q] = + c*Viq + s*Vip;
+        V[i][p] = - s*Viq + c*Vip;
         }
      }
 

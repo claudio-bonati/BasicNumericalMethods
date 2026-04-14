@@ -114,6 +114,8 @@ void maxeig_power(int n,      // size of the matrix
                   int maxiter);     // maximun number of iterations
 
 
+// determine the eigenvalue with minimum absolute value and its the corresponding eigenvector
+// using the inverse power method (A stays constant)
 void mineig_power(int n,      // size of the matrix
                   double **A, 
                   double *eigvalue,
@@ -121,13 +123,18 @@ void mineig_power(int n,      // size of the matrix
                   double accuracy,  // accuracy of the eigenvalue
                   int maxiter);     // maximun number of iterations
 
-void Jacobi_diag(int n, 
+
+// Diagonalization with Jacobi method
+//
+// at the end of the algorithm A is diagonal 
+// eigvals are sorted in such a way that eigvals[0]<=eigvals[1]<=eigvals[2]<=...
+// and V[][i] is the eigenvector corresponfing to eigvals[i]
+void Jacobi_diag(int n, // size of the matrix
                  double **A, 
                  double *eigvals,
-                 double **V, 
-                 double accuracy,
-                 int maxiter); 
-
+                 double **V,      
+                 double accuracy, // maximum value for off diagonal elements
+                 int maxiter);    // maximum number of iterations
 
 #endif
 
