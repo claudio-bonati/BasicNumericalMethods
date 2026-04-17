@@ -3,6 +3,7 @@ CFLAGS=-O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99
 
 binaries= example_integration \
 	example_linear_equations \
+	example_ode_initial \
 	example_root_find \
         example_spectrum \
 	test_double \
@@ -18,6 +19,10 @@ example_linear_equations: ../src/example_linear_equations.c linear_algebra.o
 	$(CC) $(CFLAGS) -c ../src/example_linear_equations.c 
 	$(CC) $(CFLAGS) linear_algebra.o example_linear_equations.o -o $@ -lm 
 
+example_ode_initial: ../src/example_ode_initial.c ode.o
+	$(CC) $(CFLAGS) -c ../src/example_ode_initial.c 
+	$(CC) $(CFLAGS) ode.o example_ode_initial.o -o $@ -lm 
+
 example_root_find: ../src/example_root_find.c root_find.o
 	$(CC) $(CFLAGS) -c ../src/example_root_find.c 
 	$(CC) $(CFLAGS) root_find.o example_root_find.o -o $@ -lm 
@@ -32,6 +37,9 @@ integration.o: ../lib/integration.c ../include/integration.h
 linear_algebra.o: ../lib/linear_algebra.c ../include/linear_algebra.h
 	$(CC) $(CFLAGS) -c ../lib/linear_algebra.c 
 
+ode.o: ../lib/ode.c ../include/ode.h
+	$(CC) $(CFLAGS) -c ../lib/ode.c 
+
 root_find.o: ../lib/root_find.c ../include/root_find.h
 	$(CC) $(CFLAGS) -c ../lib/root_find.c 
 
@@ -43,7 +51,7 @@ test_float: ../src/test_float.c
 
 .PHONY: clean cleanobj
 clean:
-	rm -f $(binaries) *.o
+	rm -f $(binaries) *.o *.dat
 
 cleanobj:
 	rm -f *.o
