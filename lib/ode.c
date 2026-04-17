@@ -12,59 +12,87 @@ void Euler(void (*func)(double, double*, double*), // r.h.s
            double y0[DIM],   // initial position
            double tend,      // integrate from t0 to tend
            int nsteps,       // using n steps of identical size
-           char *datafile)  // name of the output file
+           double **y)       // y[steps+1][DIM] solution
   {
   int i, step;
-  double y[DIM];     // value of the solution at time t
   double dydt[DIM];  // value of the r.h.s at time t
   double t=t0;
   double h=(tend-t0)/(double)nsteps; // step size
-  FILE *fp;
-
-  // open data file
-  fp=fopen(datafile, "w");
-  if(fp==NULL)
-    {
-    fprintf(stderr, "Error in opening the file %s (%s, %d)\n", datafile, __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-    }
 
   for(i=0; i<DIM; i++)
      {
-     y[i]=y0[i];
+     y[0][i]=y0[i];
      }
-
-  #ifdef DEBUG
-    fprintf(fp, "%.12lf %.12lf %.12lf %.12lf\n", t, y[0], y[1], (y[0]*y[0]+y[1]*y[1])/2.0);
-  #else
-    fprintf(fp, "%.12lf %.12lf %.12lf\n", t, y[0], y[1]);
-  #endif
 
   for(step=0; step<nsteps; step++)
      {
      // evaluate the r.h.s
-     func(t, y, dydt);
+     func(t, y[step], dydt);
 
      // update the components
      for(i=0; i<DIM; i++) 
         {
-        y[i] = y[i] + h * dydt[i];
+        y[step+1][i] = y[step][i] + h * dydt[i];
         }
 
      // increase time
      t=t0+(double)(step+1)*h;
-
-     #ifdef DEBUG
-       fprintf(fp, "%.12lf %.12lf %.12lf %.12lf\n", t, y[0], y[1], (y[0]*y[0]+y[1]*y[1])/2.0);
-     #else
-       fprintf(fp, "%.12lf %.12lf %.12lf\n", t, y[0], y[1]);
-     #endif
      }
-
-  // close datafile
-  fclose(fp);
   }
 
+
+// Runge-Kutta 4 algorith to solve 
+// the system: dy/dt = func(t, y)
+void RK4(void (*func)(double, double*, double*), // r.h.s 
+         double t0,        // initial time
+         double y0[DIM],   // initial position
+         double tend,      // integrate from t0 to tend
+         int nsteps,       // using n steps of identical size
+         double **y)       // y[steps+1][DIM] solution
+  {
+  int i, step;
+  double dydt1[DIM], dydt2[DIM], dydt3[DIM], dydt4[DIM], yaux[DIM];
+  double t=t0;
+  double h=(tend-t0)/(double)nsteps; // step size
+
+  for(i=0; i<DIM; i++)
+     {
+     y[0][i]=y0[i];
+     }
+
+  for(step=0; step<nsteps; step++)
+     {
+     // evaluate the r.h.s
+     func(t, y[step], dydt1);  // f(t, y)
+   
+     for(i=0; i<DIM; i++)
+        {
+        yaux[i]=y[step][i]+h*dydt1[i]/2.0;
+        }
+     func(t+h/2.0, yaux, dydt2);  // f(t+h/2, y+k1*h/2)
+    
+     for(i=0; i<DIM; i++)
+        {
+        yaux[i]=y[step][i]+h*dydt2[i]/2.0;
+        }
+     func(t+h/2.0, yaux, dydt3);  // f(t+h/2, y+k2*h/2)
+ 
+     for(i=0; i<DIM; i++)
+        {
+        yaux[i]=y[step][i]+h*dydt3[i];
+        }
+     func(t+h, yaux, dydt4);  // f(t+h, y+k3*h)
+ 
+     // update the components
+     for(i=0; i<DIM; i++) 
+        {
+        y[step+1][i] = y[step][i] + h*(dydt1[i]+2.0*dydt2[i]+2.0*dydt3[i]+dydt4[i])/6.0;
+        }
+
+     // increase time
+     t=t0+(double)(step+1)*h;
+     }
+  }
 
 
 // Symplectic Euler algorith to solve 
@@ -76,65 +104,96 @@ void SympEuler(void (*funcp)(double, double*, double*), // r.h.s for p
                double y0[DIM],  // initial position
                double tend,     // integrate from t0 to tend
                int nsteps,      // using n steps of identical size
-               char *datafile)  // name of the output file
+               double **y)       // y[steps+1][DIM] solution
   {
   int i, step;
-  double y[DIM];     // value of the solution at time t
   double dydt[DIM];  // value of the r.h.s at time t
   double t=t0;
   double h=(tend-t0)/(double)nsteps; // step size
-  FILE *fp;
-
-  // open data file
-  fp=fopen(datafile, "w");
-  if(fp==NULL)
-    {
-    fprintf(stderr, "Error in opening the file %s (%s, %d)\n", datafile, __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-    }
 
   for(i=0; i<DIM; i++)
      {
-     y[i]=y0[i];
+     y[0][i]=y0[i];
      }
-
-  #ifdef DEBUG
-    fprintf(fp, "%.12lf %.12lf %.12lf %.12lf\n", t, y[0], y[1], (y[0]*y[0]+y[1]*y[1])/2.0);
-  #else
-    fprintf(fp, "%.12lf %.12lf %.12lf\n", t, y[0], y[1]);
-  #endif
 
   for(step=0; step<nsteps; step++)
      {
      // evaluate the r.h.s for p
-     funcp(t, y, dydt);
+     funcp(t, y[step], dydt);
 
      // update the p components
      for(i=0; i<DIM/2; i++) 
         {
-        y[i] = y[i] + h * dydt[i];
+        y[step+1][i] = y[step][i] + h * dydt[i];
         }
 
      // evaluate the r.h.s for q
-     funcq(t, y, dydt);
+     funcq(t, y[step+1], dydt);
 
      // update the q components
      for(i=DIM/2; i<DIM; i++) 
         {
-        y[i] = y[i] + h * dydt[i];
+        y[step+1][i] = y[step][i] + h * dydt[i];
         }
 
      // increase time
      t=t0+(double)(step+1)*h;
+     }
+  }
 
-     #ifdef DEBUG
-       fprintf(fp, "%.12lf %.12lf %.12lf %.12lf\n", t, y[0], y[1], (y[0]*y[0]+y[1]*y[1])/2.0);
-     #else
-       fprintf(fp, "%.12lf %.12lf %.12lf\n", t, y[0], y[1]);
-     #endif
+
+// Leapfrog (aka Verlet) algorith to solve 
+// the Hamiltonian system: dy/dt = func(t, y)
+// with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]
+void leapfrog(void (*funcp)(double, double*, double*), // r.h.s for p 
+              void (*funcq)(double, double*, double*), // r.h.s for q
+              double t0,       // initial time
+              double y0[DIM],  // initial position
+              double tend,     // integrate from t0 to tend
+              int nsteps,      // using n steps of identical size
+              double **y)      // y[steps+1][DIM] solution
+  {
+  int i, step;
+  double dydt[DIM];  // value of the r.h.s at time t
+  double t=t0;
+  double h=(tend-t0)/(double)nsteps; // step size
+
+  for(i=0; i<DIM; i++)
+     {
+     y[0][i]=y0[i];
      }
 
-  // close datafile
-  fclose(fp);
+  for(step=0; step<nsteps; step++)
+     {
+     // evaluate the r.h.s for p
+     funcp(t, y[step], dydt);
+
+     // update the p components
+     for(i=0; i<DIM/2; i++) 
+        {
+        y[step+1][i] = y[step][i] + h*dydt[i]/2.0;
+        }
+
+     // evaluate the r.h.s for q
+     funcq(t, y[step+1], dydt);
+
+     // update the q components
+     for(i=DIM/2; i<DIM; i++) 
+        {
+        y[step+1][i] = y[step][i] + h*dydt[i];
+        }
+
+     // evaluate the r.h.s for p
+     funcp(t, y[step+1], dydt);
+
+     // update the p components
+     for(i=0; i<DIM/2; i++) 
+        {
+        y[step+1][i] = y[step+1][i] + h*dydt[i]/2.0;
+        }
+
+     // increase time
+     t=t0+(double)(step+1)*h;
+     }
   }
 
