@@ -14,6 +14,23 @@ and references to proofs.
 
 ------------------------
 
+Library function 
+
+-) root-finding: bisection and secant methods
+ 
+-) integration: trapezoidal rule and Richardson extrapolation
+
+-) linear algebra: 
+   solvers for linear equations (Gauss-Jordan elimination, 
+      Gauss-Seidel and conjugate gradient iterative solvers)   
+   eigensolvers (power iterations for min/max eigenvalue, 
+      Jacobi method) 
+
+-) ODE: 
+   initial problem solvers (Euler, symplectic Euler, leapfrog, 
+      Runge-Kutta 4)
+
+------------------------
 
 To compile use 
 
