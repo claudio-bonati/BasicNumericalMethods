@@ -89,17 +89,32 @@ void funcq(double t,         // in case the r.h.s also depends on time
 
 // -------------------------------------------------------
 
-int main(void) 
+int main(int argc, char **argv)
   {
   double t0=0.0;
   double y0[DIM] = {0.0, -1.45};  // initial condition: y0=0.0, y1=-1.45
   double time=50;
   double energy;
-  int step, nsteps = 400; 
+  int step, nsteps; 
   char datafile[STRING_LENGTH];
   FILE *fp;
 
   double **y; // y[nsteps+1][DIM] solution
+
+  // check input from command line
+  if(argc != 2)
+    {
+    fprintf(stdout, "How to use this program:\n");
+    fprintf(stdout, "  %s nsteps\n\n", argv[0]);
+    fprintf(stdout, "  nsteps = number of integration steps\n");
+
+    return EXIT_SUCCESS;
+    }
+  else
+    {  
+    // read input value
+    nsteps=atoi(argv[1]);
+    }
 
   // allocate y
   y=(double **)malloc((unsigned long int)(nsteps+1)*sizeof(double*));
