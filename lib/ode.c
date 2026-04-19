@@ -96,10 +96,10 @@ void RK4(void (*func)(double, double*, double*), // r.h.s
 
 
 // Symplectic Euler algorith to solve 
-// the Hamiltonian system: dy/dt = func(t, y)
+// the Hamiltonian system: dy/dt = func(y)
 // with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]
-void SympEuler(void (*funcp)(double, double*, double*), // r.h.s for p 
-               void (*funcq)(double, double*, double*), // r.h.s for q
+void SympEuler(void (*funcp)(double*, double*), // r.h.s for p
+               void (*funcq)(double*, double*), // r.h.s for q
                double t0,       // initial time
                double y0[DIM],  // initial position
                double tend,     // integrate from t0 to tend
@@ -108,7 +108,6 @@ void SympEuler(void (*funcp)(double, double*, double*), // r.h.s for p
   {
   int i, step;
   double dydt[DIM];  // value of the r.h.s at time t
-  double t=t0;
   double h=(tend-t0)/(double)nsteps; // step size
 
   for(i=0; i<DIM; i++)
@@ -119,7 +118,7 @@ void SympEuler(void (*funcp)(double, double*, double*), // r.h.s for p
   for(step=0; step<nsteps; step++)
      {
      // evaluate the r.h.s for p
-     funcp(t, y[step], dydt);
+     funcp(y[step], dydt);
 
      // update the p components
      for(i=0; i<DIM/2; i++) 
@@ -128,25 +127,22 @@ void SympEuler(void (*funcp)(double, double*, double*), // r.h.s for p
         }
 
      // evaluate the r.h.s for q
-     funcq(t, y[step+1], dydt);
+     funcq(y[step+1], dydt);
 
      // update the q components
      for(i=DIM/2; i<DIM; i++) 
         {
         y[step+1][i] = y[step][i] + h * dydt[i];
         }
-
-     // increase time
-     t=t0+(double)(step+1)*h;
      }
   }
 
 
 // Leapfrog (aka Verlet) algorith to solve 
-// the Hamiltonian system: dy/dt = func(t, y)
+// the Hamiltonian system: dy/dt = func(y)
 // with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]
-void leapfrog(void (*funcp)(double, double*, double*), // r.h.s for p 
-              void (*funcq)(double, double*, double*), // r.h.s for q
+void leapfrog(void (*funcp)(double*, double*), // r.h.s for p 
+              void (*funcq)(double*, double*), // r.h.s for q
               double t0,       // initial time
               double y0[DIM],  // initial position
               double tend,     // integrate from t0 to tend
@@ -155,7 +151,6 @@ void leapfrog(void (*funcp)(double, double*, double*), // r.h.s for p
   {
   int i, step;
   double dydt[DIM];  // value of the r.h.s at time t
-  double t=t0;
   double h=(tend-t0)/(double)nsteps; // step size
 
   for(i=0; i<DIM; i++)
@@ -166,7 +161,7 @@ void leapfrog(void (*funcp)(double, double*, double*), // r.h.s for p
   for(step=0; step<nsteps; step++)
      {
      // evaluate the r.h.s for p
-     funcp(t, y[step], dydt);
+     funcp(y[step], dydt);
 
      // update the p components
      for(i=0; i<DIM/2; i++) 
@@ -175,7 +170,7 @@ void leapfrog(void (*funcp)(double, double*, double*), // r.h.s for p
         }
 
      // evaluate the r.h.s for q
-     funcq(t, y[step+1], dydt);
+     funcq(y[step+1], dydt);
 
      // update the q components
      for(i=DIM/2; i<DIM; i++) 
@@ -184,16 +179,13 @@ void leapfrog(void (*funcp)(double, double*, double*), // r.h.s for p
         }
 
      // evaluate the r.h.s for p
-     funcp(t, y[step+1], dydt);
+     funcp(y[step+1], dydt);
 
      // update the p components
      for(i=0; i<DIM/2; i++) 
         {
         y[step+1][i] = y[step+1][i] + h*dydt[i]/2.0;
         }
-
-     // increase time
-     t=t0+(double)(step+1)*h;
      }
   }
 

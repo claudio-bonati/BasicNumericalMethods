@@ -44,7 +44,7 @@ void func(double t,         // in case the r.h.s also depends on time
   }
 
 
-// Define dp/dt = fp(t, y) for Hamiltonian system, 
+// Define dp/dt = fp(y) for Hamiltonian system, 
 // with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]
 //
 // Example system for DIM==2: 
@@ -52,11 +52,9 @@ void func(double t,         // in case the r.h.s also depends on time
 //
 // y0=p  ;  y1=x
 // H=p^2/2 - x^2/2 + x^4/4  
-void funcp(double t,         // in case the r.h.s also depends on time
-           double y[DIM],    // input
+void funcp(double y[DIM],    // input
            double dydt[DIM]) // output
   {
-  (void)t;  // just to avoid compile time warning 
   #if DIM==2
     dydt[0] = y[1]-pow(y[1],3);
   #else
@@ -66,7 +64,7 @@ void funcp(double t,         // in case the r.h.s also depends on time
   }
 
 
-// Define dq/dt = fp(t, y) for Hamiltonian system, 
+// Define dq/dt = fq(y) for Hamiltonian system, 
 // with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]
 //
 // Example system for DIM==2: 
@@ -74,11 +72,9 @@ void funcp(double t,         // in case the r.h.s also depends on time
 //
 // y0=p  ;  y1=x
 // H=p^2/2 + x^2/2  
-void funcq(double t,         // in case the r.h.s also depends on time
-           double y[DIM],    // input
+void funcq(double y[DIM],    // input
            double dydt[DIM]) // output
   {
-  (void)t;  // just to avoid compile time warning 
   #if DIM==2
     dydt[1] = y[0];
   #else
