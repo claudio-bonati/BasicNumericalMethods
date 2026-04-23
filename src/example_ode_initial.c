@@ -5,7 +5,7 @@
 
 #define STRING_LENGTH 50
 
-#include"../include/ode.h"   // <---- DIM is #defined here!
+#include"../include/ode_init.h"   // <---- DIM is #defined here!
 
 
 // y0=p  ;  y1=x

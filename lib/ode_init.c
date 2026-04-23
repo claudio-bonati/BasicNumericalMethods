@@ -1,9 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#include"../include/ode.h"  // <--- DIM is defined here as a macro
+#include"../include/ode_init.h"  // <--- DIM is defined here as a macro
 
-//#define DEBUG   // if defined the energy of the harmonic oscillator is also printed
 
 // Euler algorith to solve 
 // the system: dy/dt = f(t, y)
@@ -188,4 +187,5 @@ void leapfrog(void (*funcp)(double*, double*), //  funcp(t,y,dy/dx) assigns dp/d
         }
      }
   }
+
 

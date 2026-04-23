@@ -1,5 +1,5 @@
-#ifndef ODE_H
-#define ODE_H
+#ifndef ODE_INIT_H
+#define ODE_INIT_H
 
 #define DIM 2  // Dimension of the system
 
