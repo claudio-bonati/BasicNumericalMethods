@@ -24,9 +24,9 @@ example_ode_initial: ../src/example_ode_initial.c ode_init.o
 	$(CC) $(CFLAGS) -c ../src/example_ode_initial.c 
 	$(CC) $(CFLAGS) ode_init.o example_ode_initial.o -o $@ -lm 
 
-example_ode_tpbvp: ../src/example_ode_tpbvp.c ode_tpbvp.o linear_algebra.o
+example_ode_tpbvp: ../src/example_ode_tpbvp.c linear_algebra.o ode_init.o ode_tpbvp.o root_find.o 
 	$(CC) $(CFLAGS) -c ../src/example_ode_tpbvp.c 
-	$(CC) $(CFLAGS) ode_tpbvp.o linear_algebra.o example_ode_tpbvp.o -o $@ -lm 
+	$(CC) $(CFLAGS) linear_algebra.o ode_init.o ode_tpbvp.o example_ode_tpbvp.o root_find.o -o $@ -lm 
 
 example_root_find: ../src/example_root_find.c root_find.o
 	$(CC) $(CFLAGS) -c ../src/example_root_find.c 

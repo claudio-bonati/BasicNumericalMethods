@@ -13,9 +13,11 @@ void tpbvp_fdm(double (*q)(double),
                double a,
                double b,
                int nsteps,  // numbert of points of the discretization
-               double *sol) // nsteps vector: sol[i]=solution in x=a+(i+1)h, with h=(b-a)/(nsteps+1)
+               double *sol, // nsteps vector: sol[i]=solution in x=a+(i+1)h, with h=(b-a)/(nsteps+1)
                             // sol[0] is the solution in a+h
                             // sol[nsteps-1] is the solution in a+nsteps*(b-a)/(nsteps+1)=b-h
+               double accuracy,    // accuracy and maxiter for Conjugate Gradient solver
+               int maxiter)
   {
   int i;
   double **A;   // finite difference matrix
@@ -61,7 +63,7 @@ void tpbvp_fdm(double (*q)(double),
      }
 
   // solve A*sol=fvec
-  conjugate_gradient(nsteps, A, fvec, sol, 1.0e-8, 1000); 
+  conjugate_gradient(nsteps, A, fvec, sol, accuracy, maxiter); 
 
   for(i=0; i<nsteps; i++)
      {
@@ -70,4 +72,5 @@ void tpbvp_fdm(double (*q)(double),
   free(A);
   free(fvec);
   }
+
 

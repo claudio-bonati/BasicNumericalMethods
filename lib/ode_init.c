@@ -11,7 +11,7 @@ void Euler(void (*func)(double, double*, double*), // func(t,y,dy/dx) assigns dy
            double y0[DIM],   // initial position
            double tend,      // integrate from t0 to tend
            int nsteps,       // using n steps of identical size
-           double **y)       // y[steps+1][DIM] solution
+           double **y)       // y[steps+1][DIM] solution (y[0]=initial value)
   {
   int i, step;
   double dydt[DIM];  // value of the r.h.s at time t
@@ -47,7 +47,7 @@ void RK4(void (*func)(double, double*, double*), // func(t,y,dy/dx) assigns dy/d
          double y0[DIM],   // initial position
          double tend,      // integrate from t0 to tend
          int nsteps,       // using n steps of identical size
-         double **y)       // y[steps+1][DIM] solution
+         double **y)       // y[steps+1][DIM] solution (y[0]=initial value)
   {
   int i, step;
   double dydt1[DIM], dydt2[DIM], dydt3[DIM], dydt4[DIM], yaux[DIM];
@@ -103,7 +103,7 @@ void SympEuler(void (*funcp)(double*, double*), // funcp(t,y,dy/dx) assigns dp/d
                double y0[DIM],  // initial position
                double tend,     // integrate from t0 to tend
                int nsteps,      // using n steps of identical size
-               double **y)       // y[steps+1][DIM] solution
+               double **y)      // y[steps+1][DIM] solution (y[0]=initial value)
   {
   int i, step;
   double dydt[DIM];  // value of the r.h.s at time t
@@ -146,7 +146,7 @@ void leapfrog(void (*funcp)(double*, double*), //  funcp(t,y,dy/dx) assigns dp/d
               double y0[DIM],  // initial position
               double tend,     // integrate from t0 to tend
               int nsteps,      // using n steps of identical size
-              double **y)      // y[steps+1][DIM] solution
+              double **y)      // y[steps+1][DIM] solution (y[0]=initial value)
   {
   int i, step;
   double dydt[DIM];  // value of the r.h.s at time t
