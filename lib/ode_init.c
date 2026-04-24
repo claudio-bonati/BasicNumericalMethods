@@ -94,6 +94,63 @@ void RK4(void (*func)(double, double*, double*), // func(t,y,dy/dx) assigns dy/d
   }
 
 
+// Runge-Kutta 4 algorith when rhs depends on a further parameter param
+// the system: dy/dt = f(t, y, param)
+void RK4_param(void (*func)(double, double*, double*, double), // func(t,y,dy/dx, param) assigns dy/dx=f(t,y, param)
+               double param,
+               double t0,        // initial time
+               double y0[DIM],   // initial position
+               double tend,      // integrate from t0 to tend
+               int nsteps,       // using n steps of identical size
+               double **y)       // y[steps+1][DIM] solution (y[0]=initial value)
+  {
+  int i, step;
+  double dydt1[DIM], dydt2[DIM], dydt3[DIM], dydt4[DIM], yaux[DIM];
+  double t=t0;
+  double h=(tend-t0)/(double)nsteps; // step size
+
+  for(i=0; i<DIM; i++)
+     {
+     y[0][i]=y0[i];
+     }
+
+  for(step=0; step<nsteps; step++)
+     {
+     // evaluate the r.h.s
+     func(t, y[step], dydt1, param);  // f(t, y)
+   
+     for(i=0; i<DIM; i++)
+        {
+        yaux[i]=y[step][i]+h*dydt1[i]/2.0;
+        }
+     func(t+h/2.0, yaux, dydt2, param);  // f(t+h/2, y+k1*h/2)
+    
+     for(i=0; i<DIM; i++)
+        {
+        yaux[i]=y[step][i]+h*dydt2[i]/2.0;
+        }
+     func(t+h/2.0, yaux, dydt3, param);  // f(t+h/2, y+k2*h/2)
+ 
+     for(i=0; i<DIM; i++)
+        {
+        yaux[i]=y[step][i]+h*dydt3[i];
+        }
+     func(t+h, yaux, dydt4, param);  // f(t+h, y+k3*h)
+ 
+     // update the components
+     for(i=0; i<DIM; i++) 
+        {
+        y[step+1][i] = y[step][i] + h*(dydt1[i]+2.0*dydt2[i]+2.0*dydt3[i]+dydt4[i])/6.0;
+        }
+
+     // increase time
+     t=t0+(double)(step+1)*h;
+     }
+  }
+
+
+
+
 // Symplectic Euler algorith to solve 
 // the Hamiltonian system: dy/dt = f(y)
 // with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]

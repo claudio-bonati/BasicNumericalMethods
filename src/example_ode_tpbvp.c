@@ -5,8 +5,8 @@
 
 #define STRING_LENGTH 50
 
-#include"../include/ode_init.h"
-#include"../include/ode_tpbvp.h"   // <---- DIM is #defined here!
+#include"../include/ode_init.h"  // <---- DIM is #defined here!
+#include"../include/ode_tpbvp.h" 
 #include"../include/root_find.h"
 
 // two point boundary value problem on [a, b] for a SCALAR equation (single component)
@@ -52,14 +52,6 @@ void for_rhs(double x, double y[DIM], double dydx[DIM])
   }
 
 
-typedef struct {
-  double a;
-  double b;
-  int nsteps; 
-  double **sol;
-} Params;
-
-
 // perform the shoot
 double func_for_shooting(double y0prime, // y'(a) 
                          double a,
@@ -76,6 +68,14 @@ double func_for_shooting(double y0prime, // y'(a)
 
   return sol[nsteps][0];
   }
+
+
+typedef struct {
+  double a;
+  double b;
+  int nsteps; 
+  double **sol;
+} Params;
 
 
 // function to be used when only y0prime is important
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     {
     fprintf(stdout, "How to use this program:\n");
     fprintf(stdout, "  %s nsteps\n\n", argv[0]);
-    fprintf(stdout, "  nsteps = number of integration steps\n");
+    fprintf(stdout, "  nsteps = number of steps in FDE or integration steps\n");
 
     return EXIT_SUCCESS;
     }
@@ -181,12 +181,12 @@ int main(int argc, char **argv)
   ctx.nsteps=nsteps;
   ctx.sol=sol_shoot;
 
-  secant_ctx(func_for_secant_with_context,
-             (void*)&ctx,
-             y0prime,
-             y0prime*1.2,
-             1.0e-8,
-             1000); 
+  y0prime=secant_ctx(func_for_secant_with_context,
+                     (void*)&ctx,
+                     y0prime,
+                     y0prime*1.2,
+                     1.0e-8,
+                     1000); 
 
   //print results
   sprintf(datafile, "ris_shoot_%d.dat", nsteps);

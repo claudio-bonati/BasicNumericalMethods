@@ -23,6 +23,16 @@ void RK4(void (*func)(double, double*, double*), // func(t,y,dy/dx) assigns dy/d
          double **y);      // y[steps+1][DIM] solution (y[0]=initial value)
 
 
+// Runge-Kutta 4 algorith when rhs depends on a further parameter param
+// the system: dy/dt = f(t, y, param)
+void RK4_param(void (*func)(double, double*, double*, double), // func(t,y,dy/dx, param) assigns dy/dx=f(t,y, param)
+               double param,
+               double t0,        // initial time
+               double y0[DIM],   // initial position
+               double tend,      // integrate from t0 to tend
+               int nsteps,       // using n steps of identical size
+               double **y);       // y[steps+1][DIM] solution (y[0]=initial value)
+
 
 // Symplectic Euler algorith to solve 
 // the Hamiltonian system: dy/dt = func(y)

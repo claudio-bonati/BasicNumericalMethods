@@ -5,6 +5,7 @@ binaries= example_integration \
 	example_linear_equations \
 	example_ode_initial \
 	example_ode_tpbvp \
+	example_ode_eigen \
 	example_root_find \
         example_spectrum \
 	test_double \
@@ -19,6 +20,10 @@ example_integration: ../src/example_integration.c integration.o
 example_linear_equations: ../src/example_linear_equations.c linear_algebra.o
 	$(CC) $(CFLAGS) -c ../src/example_linear_equations.c 
 	$(CC) $(CFLAGS) linear_algebra.o example_linear_equations.o -o $@ -lm 
+
+example_ode_eigen: ../src/example_ode_eigen.c linear_algebra.o ode_init.o ode_eigen.o root_find.o 
+	$(CC) $(CFLAGS) -c ../src/example_ode_eigen.c 
+	$(CC) $(CFLAGS) linear_algebra.o ode_init.o ode_eigen.o example_ode_eigen.o root_find.o -o $@ -lm 
 
 example_ode_initial: ../src/example_ode_initial.c ode_init.o
 	$(CC) $(CFLAGS) -c ../src/example_ode_initial.c 
@@ -41,6 +46,9 @@ integration.o: ../lib/integration.c ../include/integration.h
 
 linear_algebra.o: ../lib/linear_algebra.c ../include/linear_algebra.h
 	$(CC) $(CFLAGS) -c ../lib/linear_algebra.c 
+
+ode_eigen.o: ../lib/ode_eigen.c ../include/ode_eigen.h
+	$(CC) $(CFLAGS) -c ../lib/ode_eigen.c
 
 ode_init.o: ../lib/ode_init.c ../include/ode_init.h
 	$(CC) $(CFLAGS) -c ../lib/ode_init.c
