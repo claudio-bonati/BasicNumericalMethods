@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEBUG
+//#define DEBUG
 
 // root finding by bisection
 double bisection(double (*func)(double),  // we want to solve func(x)=0, the function return the solution 
@@ -68,6 +68,10 @@ double secant(double (*func)(double),  // we want to solve func(x)=0, the functi
 
   f1=(*func)(x1);
   f2=(*func)(x2);
+  #ifdef DEBUG
+  printf("%.12lf %.12lf %.12lf %.12lf\n", x1, f1, x2, f2);
+  #endif
+
 
   //Pick the bound with the smaller function value as the most recent guess.
   if(fabs(f1) < fabs(f2)) 
@@ -94,7 +98,7 @@ double secant(double (*func)(double),  // we want to solve func(x)=0, the functi
      fnew=(*func)(xnew);
 
      #ifdef DEBUG
-     printf("i=%d ; xnew=%g ; dx=%g ; fnew=%g\n", i, xnew, dx, fnew);
+     printf("i=%d ; xnew=%.12g ; dx=%.12g ; fnew=%.12g\n", i, xnew, dx, fnew);
      #endif
 
      if (fabs(dx) < xacc || fnew == 0.0) return xnew;
@@ -121,7 +125,9 @@ double secant_ctx(double (*func)(double, void*),  // we want to solve func(x)=0,
   f1=(*func)(x1, ctx);
   f2=(*func)(x2, ctx);
 
+  #ifdef DEBUG
   printf("%.12lf %.12lf %.12lf %.12lf\n", x1, f1, x2, f2);
+  #endif
 
   //Pick the bound with the smaller function value as the most recent guess.
   if(fabs(f1) < fabs(f2)) 
