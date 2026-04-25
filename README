@@ -29,6 +29,9 @@ Library function
 -) ODE: 
    initial problem solvers (Euler, symplectic Euler, leapfrog, 
       Runge-Kutta 4)
+   two point boundary value problems (FDE, shooting)
+   eigenvalue problems (FDE, shooting)
+
 
 ------------------------
 
