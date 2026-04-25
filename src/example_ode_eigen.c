@@ -48,7 +48,8 @@ double func_for_shooting(double lambda,
   double y0[2];
 
   y0[0]=0.0;
-  y0[1]=(b-a)/(double)(nsteps+1); // derivative 1  
+  y0[1]=(b-a)/(double)(nsteps+1); // initial derivative equal to 1
+                                  // for singular sturm-liouville problem this can create some trouble 
 
   RK4_param(for_rhs, lambda, a, y0, b, nsteps, sol); 
 
@@ -64,7 +65,7 @@ typedef struct {
 } Params;
 
 
-// function to be used when only y0prime is important
+// function to be used when only lambda is important
 double func_for_secant_with_context(double lambda, void *ctx)
   {
   Params *p=ctx;
@@ -73,14 +74,71 @@ double func_for_secant_with_context(double lambda, void *ctx)
   }
 
 
+// for normalization of f^2 up to O(h^4) [for consistency with RK4]
+double integrate_samples(double *f,  // vector f[i] with i=0,...,n-1
+                         double h,   // step
+                         int n)      // number of points
+  {
+  int i, n1;
+  double part1, part2;
+  double result = 0.0;
+
+  if(n % 2 == 0) 
+    {
+    // Simpson 1/3 method
+    result = pow(f[0], 2.0) + pow(f[n], 2.0);
+
+    for(i=1; i<n; i++) 
+       {
+       if(i%2 == 0)
+         {
+         result += 2.0 * pow(f[i], 2.0);
+         }
+       else
+         {
+         result += 4.0 * pow(f[i], 2.0);
+         }
+       }
+
+    result *= h / 3.0;
+    } 
+  else 
+   {
+   // Simpson 1/3 method on the first n-3 intervals
+   n1 = n - 3;
+
+   part1 = pow(f[0], 2.0) + pow(f[n1], 2.0);
+   for(i=1; i<n1; i++) 
+      {
+      if(i%2 == 0)
+        {
+        part1 += 2.0 * pow(f[i], 2.0);
+        }
+      else
+        {
+        part1 += 4.0 * pow(f[i], 2.0);
+        }
+      }
+   part1 *= h / 3.0;
+
+   // Simpson 3/8 rule on last 3 intervals
+   part2 = (3.0 * h / 8.0) *
+                  (pow(f[n1], 2.0) + 3.0*pow(f[n1+1], 2.0) + 3.0*pow(f[n1+2], 2.0) + pow(f[n1+3], 2.0));
+
+   result = part1 + part2;
+   }
+
+  return result;
+  }
+
 // ---------------------------
 
 
 int main(int argc, char **argv)
   {
   int i, j, nsteps_fde, nsteps_shoot; 
-  const double a=-10;
-  const double b=10;
+  const double a=-5;
+  const double b=5;
   double h, norm, lambda;
   char datafile[STRING_LENGTH];
   FILE *fp;
@@ -91,7 +149,8 @@ int main(int argc, char **argv)
                          //  eigvects_fde[i][j] is the eigfunction corresponding to eigvals_fde[j]
                          //  evaluated at x=a+(i+1)h, with h=(b-a)/(nsteps_fde+1)
 
-  double **sol_shoot; // sol_shoot[nsteps_fde+1][2]
+  double **sol_shoot; // sol_shoot[nsteps_shoot+1][2]
+  double *aux_sol; // aux_sol[nsteps_shoot+1]
 
   // check input from command line
   if(argc != 3)
@@ -148,6 +207,14 @@ int main(int argc, char **argv)
        return EXIT_FAILURE;
        }
      }
+  
+  // allocate aux_sol
+  aux_sol=(double *)malloc((unsigned long int)(nsteps_shoot+1)*sizeof(double));
+  if(aux_sol == NULL)
+    {
+    fprintf(stderr, "allocation problem (%s, %d)\n", __FILE__, __LINE__);
+    return EXIT_FAILURE;
+    }
 
   // ----------- FINITE DIFFERENCE METHOD ------------ 
 
@@ -174,10 +241,10 @@ int main(int argc, char **argv)
         {
         norm+=pow(eigvects_fde[j][i],2.0)*h;
         }
-     norm=sqrt(norm);
+     norm=1.0/sqrt(norm);
      for(j=0; j<nsteps_fde; j++)
         {
-        eigvects_fde[j][i]/=norm;
+        eigvects_fde[j][i]*=norm;
         }
      }
 
@@ -216,21 +283,22 @@ int main(int argc, char **argv)
              1.0e-8,
              1000); 
 
+  for(i=0; i<=nsteps_shoot; i++)
+     {
+     aux_sol[i]=sol_shoot[i][0];
+     }
+
   // normalize the solution
   h=(b-a)/(double)(nsteps_shoot+1);
 
-  norm=0.0;
-  for(i=1; i<nsteps_shoot; i++)
+  // notmalize aux_sol^2 up to O(h^4)
+  norm=integrate_samples(aux_sol, h, nsteps_shoot+1); 
+  norm=1.0/sqrt(norm);
+  for(i=0; i<=nsteps_shoot; i++)
      {
-     norm+=pow(sol_shoot[i][0],2.0)*h;
+     aux_sol[i]*=norm;
      }
-  norm=sqrt(norm);
-  for(i=1; i<nsteps_shoot; i++)
-     {
-     sol_shoot[i][0]/=norm;
-     sol_shoot[i][1]/=norm;
-     }
-
+ 
   //print results
   sprintf(datafile, "ris_shoot_%d.dat", nsteps_shoot);
 
@@ -245,7 +313,7 @@ int main(int argc, char **argv)
 
   for(i=0; i<=nsteps_shoot; i++)
      {
-     fprintf(fp,"%.12lf %.12lf\n", a+h*(double)i, sol_shoot[i][0]);
+     fprintf(fp,"%.12lf %.12lf\n", a+h*(double)i, aux_sol[i]);
      }
 
   fclose(fp);
@@ -264,6 +332,7 @@ int main(int argc, char **argv)
      free(sol_shoot[i]);
      }
   free(sol_shoot);
+  free(aux_sol);
 
   return EXIT_SUCCESS;
   }
