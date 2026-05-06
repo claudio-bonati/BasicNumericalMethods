@@ -27,9 +27,9 @@ Example codes:
 -) numerical integration
 -) linear equations
 -) eigensolvers for linear algebra
--) ODE: iniaial value problems
-        two point boundary value problems
-        eigenvalue problems
+-) ODE: initial value problems
+        two point boundary value problems (FDE, shooting)
+        eigenvalue problems (FDE, shooting)
 
 ------------------------
 
