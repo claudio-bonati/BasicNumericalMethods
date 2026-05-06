@@ -3,18 +3,7 @@
 ******        WITH TYPICAL NUMERICAL PROBLEMS       ******
 **********************************************************
 
-The main reference for all the codes is 
-
-W. H. Press, S. A. Teukolsky, W. T. Vetterling, B. P. Flannery 
-``Numerical Recipes in C. The Art of Scientific Computing'' 
-Cambridge University Press
-
-where you can find much more information about the algorithms 
-and references to proofs.
-
-------------------------
-
-Library function 
+Library functions 
 
 -) root-finding: bisection and secant methods
  
@@ -30,8 +19,17 @@ Library function
    initial problem solvers (Euler, symplectic Euler, leapfrog, 
       Runge-Kutta 4)
    two point boundary value problems (FDE, shooting)
-   eigenvalue problems (FDE, shooting)
+   eigenvalue problems (FDE)
 
+Example codes:
+
+-) root finiding 
+-) numerical integration
+-) linear equations
+-) eigensolvers for linear algebra
+-) ODE: iniaial value problems
+        two point boundary value problems
+        eigenvalue problems
 
 ------------------------
 
