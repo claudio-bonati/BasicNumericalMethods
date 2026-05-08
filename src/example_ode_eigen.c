@@ -258,7 +258,7 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
     }
 
-  fprintf(fp,"#%d %.12lf %.12lf\n", nsteps_fde, eigvals_fde[0], eigvals_fde[2]);
+  fprintf(fp,"#%d %.12lf %.12lf\n", nsteps_fde, eigvals_fde[0], eigvals_fde[1]);
 
   for(i=0; i<nsteps_fde; i++)
      {
@@ -269,7 +269,7 @@ int main(int argc, char **argv)
 
   // ----------- SHOOTING METHOD ------------ 
 
-  lambda=1.0; // eigvals_fde[0];
+  lambda=eigvals_fde[0];
 
   ctx.a=a;
   ctx.b=b;
