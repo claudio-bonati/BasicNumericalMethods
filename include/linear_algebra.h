@@ -14,14 +14,14 @@ inline void equal_vec(int n, double *out, double *in)
      }
   } 
 
-// vector -=: a-=b
-inline void minuseq_vec(int n, double *a, double *b)
+// vector += other vector times a constant : a += s*b (s real number)
+inline void pluseqtimesconst_vec(int n, double *a, double *b, double s)
   {
   int i;
 
   for(i=0; i<n; i++)
      {
-     a[i]-=b[i];
+     a[i] += s*b[i];
      }
   } 
 
@@ -97,7 +97,9 @@ void GaussSeidel(int n,       // size of the matrix
 void conjugate_gradient(int n,      // size of the matrix
                         double **A, 
                         double *b, 
-                        double *x, 
+                        double *x,   // NOTE: x not initialized in this function! 
+                                     // this is convenient if this function has to be called several
+                                     // times with slightly different b values 
                         double accuracy,  // accuracy of the solution: ||r_k||<accuracy
                         int maxiter);     // maximun number of iterations
 

@@ -73,7 +73,6 @@ int main(void)
     }
 
 
-
   // initialize A with a tridiagonal matrix
   for(i=0; i<n; i++)
      {
@@ -118,7 +117,7 @@ int main(void)
   printf("\n\n"); 
 
   // all the eigenvalues of the discrete second derivative 
-  // are 4*sin^2(pi j/[2*(n+1)])
+  // are 4*sin^2(pi j/[2*(n+1)]), j=1,..., n
   // see, e.g., D'Elia "Lezioni di meccanica classica" sez. 4.4.1
   // or
   // https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors_of_the_second_derivative

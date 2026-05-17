@@ -14,7 +14,7 @@ Test for the linear solvers
 int main(void)
   {
   int i, j;
-  const int n = 10;
+  const int n = 20;
   double **A, *b, *x;
   double **Acopy, *bcopy, *auxvec;
   double test; 
@@ -56,7 +56,7 @@ int main(void)
        }
      }
 
-  // allocate b, bcopy and x
+  // allocate b, bcopy, x and auxvec
   b=(double *)malloc((unsigned long int)(n)*sizeof(double));
   if(b == NULL)
     {
@@ -118,7 +118,7 @@ int main(void)
 
   // test the solution
   matvec_mult(n, auxvec, Acopy, x); // auxvec=Acopy*x
-  minuseq_vec(n, auxvec, bcopy);    // auxvec-=bcopy
+  pluseqtimesconst_vec(n, auxvec, bcopy, -1.0);    // auxvec-=bcopy
   test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
   printf("Test of Gauss-Jordan solution\n");
   printf("|Ax-b|_2 = %g\n", test);
@@ -170,7 +170,7 @@ int main(void)
  
   // test the solution
   matvec_mult(n, auxvec, A, x); // auxvec=A*x
-  minuseq_vec(n, auxvec, b);    // aux-=b
+  pluseqtimesconst_vec(n, auxvec, b, -1.0);    // aux-=b
   test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
   printf("Test of Gauss-Seidel solution\n");
   printf("|Ax-b|_2 = %g\n", test);
@@ -205,7 +205,7 @@ int main(void)
 
   // test the solution
   matvec_mult(n, auxvec, A, x); // auxvec=A*x
-  minuseq_vec(n, auxvec, b);    // aux-=b
+  pluseqtimesconst_vec(n, auxvec, b, -1.0);    // aux-=b
   test=sqrt(scalprod(n, auxvec, auxvec)); // test = ||auxvec||
   printf("Test of conjugate gradient solution\n");
   printf("|Ax-b|_2 = %g\n", test);

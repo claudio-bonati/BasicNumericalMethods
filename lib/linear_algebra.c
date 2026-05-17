@@ -12,8 +12,8 @@
 // vector assignement: out=in
 void equal_vec(int n, double *out, double *in);
 
-// vector -=: a-=b
-void minuseq_vec(int n, double *a, double *b);
+// vector += other vector times a constant : a += s*b (s real number)
+void pluseqtimesconst_vec(int n, double *a, double *b, double s);
 
 // matrix assignement: out=in
 void equal_mat(int n, double **out, double **in); 
@@ -166,7 +166,7 @@ void GaussSeidel(int n,       // size of the matrix
 
   for(i=0; i<n; i++)
      {
-     x[i]=0.0; // step zero, anything would work
+     x[i]=0.0; // step zero, any value would work
      }
   
   err=accuracy+1.0;
@@ -229,7 +229,9 @@ void GaussSeidel(int n,       // size of the matrix
 void conjugate_gradient(int n,      // size of the matrix
                         double **A, 
                         double *b, 
-                        double *x, 
+                        double *x,   // NOTE: x not initialized in this function! 
+                                     // this is convenient if this function has to be called several
+                                     // times with slightly different b values 
                         double accuracy,  // accuracy of the solution: ||r_k||<= accuracy
                         int maxiter)      // maximun number of iterations
   {
@@ -276,16 +278,10 @@ void conjugate_gradient(int n,      // size of the matrix
      alpha = rs_old / scalprod(n, p, Ap);
   
      // x = x + alpha * p
-     for(i=0; i<n; i++)
-        {
-        x[i] += alpha * p[i];
-        }
+     pluseqtimesconst_vec(n, x, p, alpha);
   
      // r = r - alpha * Ap
-     for(i=0; i<n; i++)
-        {
-        r[i] -= alpha * Ap[i];
-        }
+     pluseqtimesconst_vec(n, r, Ap, -alpha);
   
      rs_new = scalprod(n, r, r);
      #ifdef DEBUG
