@@ -43,7 +43,7 @@ double bisection(double (*func)(double),  // we want to solve func(x)=0, the fun
      if(fmid <= 0.0) negx=xmid;
  
      #ifdef DEBUG
-     printf("i=%d ; xmid=%g ; dx=%g ; fmid=%g\n", i, xmid, dx, fmid);
+     printf("i=%d ; xmid=%.16g ; dx=%.16g ; fmid=%.16g\n", i, xmid, dx, fmid);
      #endif
      
      if(fabs(dx) < xacc || fmid == 0.0) return xmid;  // final result
@@ -69,11 +69,10 @@ double secant(double (*func)(double),  // we want to solve func(x)=0, the functi
   f1=(*func)(x1);
   f2=(*func)(x2);
   #ifdef DEBUG
-  printf("%.12lf %.12lf %.12lf %.12lf\n", x1, f1, x2, f2);
+  printf("%.16lf %.16lf %.16lf %.16lf\n", x1, f1, x2, f2);
   #endif
 
-
-  //Pick the bound with the smaller function value as the most recent guess.
+  //Pick the bound with the smaller function abs value as the most recent guess.
   if(fabs(f1) < fabs(f2)) 
     {
     xnew=x1;
@@ -98,7 +97,7 @@ double secant(double (*func)(double),  // we want to solve func(x)=0, the functi
      fnew=(*func)(xnew);
 
      #ifdef DEBUG
-     printf("i=%d ; xnew=%.12g ; dx=%.12g ; fnew=%.12g\n", i, xnew, dx, fnew);
+     printf("i=%d ; xnew=%.16g ; dx=%.16g ; fnew=%.16g\n", i, xnew, dx, fnew);
      #endif
 
      if (fabs(dx) < xacc || fnew == 0.0) return xnew;
@@ -126,7 +125,7 @@ double secant_ctx(double (*func)(double, void*),  // we want to solve func(x)=0,
   f2=(*func)(x2, ctx);
 
   #ifdef DEBUG
-  printf("%.12lf %.12lf %.12lf %.12lf\n", x1, f1, x2, f2);
+  printf("%.16lf %.16lf %.16lf %.16lf\n", x1, f1, x2, f2);
   #endif
 
   //Pick the bound with the smaller function value as the most recent guess.
@@ -154,7 +153,7 @@ double secant_ctx(double (*func)(double, void*),  // we want to solve func(x)=0,
      fnew=(*func)(xnew, ctx);
 
      #ifdef DEBUG
-     printf("i=%d ; xnew=%.12g ; dx=%.12g ; fnew=%.12g\n", i, xnew, dx, fnew);
+     printf("i=%d ; xnew=%.16g ; dx=%.16g ; fnew=%.16g\n", i, xnew, dx, fnew);
      #endif
 
      if (fabs(dx) < xacc || fnew == 0.0) return xnew;
