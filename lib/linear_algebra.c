@@ -34,7 +34,8 @@ void GaussJordan_fullpivot(int n,     // size of the matrix
                            double **A, 
                            double *b, 
                            double *x,
-                           double accuracy) // maximum absolute size of out diagonal elements
+                           double accuracy) // if the absolute size of all elements is smaller than "accuracy" 
+                                            // the matrix is considered to be singular
   {
   int i, j, k, pivotrow, pivotcol, tmpindex;
   double max, tmp, pivot;

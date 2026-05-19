@@ -15,7 +15,7 @@ double trapezoidal(double (*func)(double),  // function to be integrated
                    int n)     // 2^n points used for the discretization, n>=1
   {
   double x, sum, delta;
-  static double s;
+  double s;
   int numpoints, i;
   
   if(n<1)
