@@ -408,6 +408,11 @@ void mineig_power(int n,      // size of the matrix
     fprintf(stderr, "MinEigPow: allocation problem (%s, %d)\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
     }
+  // initialize Ax to zero
+  for(i=0; i<n; i++)
+     {
+     Ax[i]=0.0;
+     }
 
   // initialize the random number generator with the time
   srand((unsigned int)time(NULL));
@@ -497,7 +502,7 @@ void max_offdiag(int n, double **A, int *p, int *q)
 // to sort eigvenalues at the end of Jacobi diagonalization:
 // column V[:][i] is the eigenvector corresponging to eigenvalues[i]
 // eigenvalues are sorted according to
-// eigenvalues[0] <= eigenvalues[1] <= ...
+// eigenvalues[0] < eigenvalues[1] < ...
 void sort_eigenpairs(int n, double *eigenvalues, double **V) 
   {
   int i, j, k, min_idx;
@@ -535,6 +540,8 @@ void sort_eigenpairs(int n, double *eigenvalues, double **V)
 // at the end of the algorithm A is diagonal 
 // eigvals are sorted in such a way that eigvals[0]<=eigvals[1]<=eigvals[2]<=...
 // and V[:][i] is the eigenvector corresponfing to eigvals[i]
+//
+// NOTE: A is not sorted!
 void Jacobi_diag(int n, // size of the matrix
                  double **A, 
                  double *eigvals,

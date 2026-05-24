@@ -57,7 +57,7 @@ double func_for_shooting(double y0prime, // y'(a)
                          double a,
                          double b,
                          int nsteps,
-                         double **sol)  // sol[nsteps+1][2] solution of the problem if sol[nsteps][0]==0
+                         double **sol)  // the array sol[nsteps+1][2] is the solution of the problem if sol[nsteps][0]==0
   {
   double y0[2];
 
@@ -92,7 +92,7 @@ double func_for_secant_with_context(double y0prime, void *ctx)
 
 int main(int argc, char **argv)
   {
-  int i, nsteps; 
+  int i, nsteps;  // NOTE: for FDE nsteps is in fact the number of points
   const double a=0.0;
   const double b=1.0;
   double h, y0prime;

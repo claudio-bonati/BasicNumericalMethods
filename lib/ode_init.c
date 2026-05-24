@@ -96,6 +96,9 @@ void RK4(void (*func)(double, double*, double*), // func(t,y,dy/dx) assigns dy/d
 
 // Runge-Kutta 4 algorith when rhs depends on a further parameter param
 // the system: dy/dt = f(t, y, param)
+//
+// this will be useful for identifying eigenvalues in eig. problems 
+// using the shooting method
 void RK4_param(void (*func)(double, double*, double*, double), // func(t,y,dy/dx, param) assigns dy/dx=f(t,y, param)
                double param,
                double t0,        // initial time
@@ -149,11 +152,10 @@ void RK4_param(void (*func)(double, double*, double*, double), // func(t,y,dy/dx
   }
 
 
-
-
-// Symplectic Euler algorith to solve 
+// Symplectic Euler algorithm to solve 
 // the Hamiltonian system: dy/dt = f(y)
-// with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]
+// with p=y[0,...,DIM/2-1], 
+// q=y[DIM/2, ..., DIM-1]
 void SympEuler(void (*funcp)(double*, double*), // funcp(t,y,dy/dx) assigns dp/dt=f(y)
                void (*funcq)(double*, double*), // funcq(t,y,dy/dx) assigns dq/dt=f(y)
                double t0,       // initial time
@@ -194,9 +196,10 @@ void SympEuler(void (*funcp)(double*, double*), // funcp(t,y,dy/dx) assigns dp/d
   }
 
 
-// Leapfrog (aka Verlet) algorith to solve 
+// Leapfrog (aka Verlet) algorithm to solve 
 // the Hamiltonian system: dy/dt = func(y)
-// with p=y[0,...,DIM/2-1], q=y[DIM/2, ..., DIM-1]
+// with p=y[0,...,DIM/2-1], 
+// q=y[DIM/2, ..., DIM-1]
 void leapfrog(void (*funcp)(double*, double*), //  funcp(t,y,dy/dx) assigns dp/dt=f(y)
               void (*funcq)(double*, double*), //  funcq(t,y,dy/dx) assigns dq/dt=f(y)
               double t0,       // initial time

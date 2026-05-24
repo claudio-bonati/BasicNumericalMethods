@@ -277,11 +277,11 @@ int main(int argc, char **argv)
   ctx.sol=sol_shoot;
 
   lambda=secant_ctx(func_for_secant_with_context,
-             (void*)&ctx,
-             lambda,
-             lambda*1.2,
-             1.0e-8,
-             1000); 
+                   (void*)&ctx,
+                   lambda,
+                   lambda*1.2,
+                   1.0e-8,
+                   1000); 
 
   for(i=0; i<=nsteps_shoot; i++)
      {
