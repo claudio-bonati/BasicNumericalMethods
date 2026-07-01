@@ -9,7 +9,7 @@
 #include"../include/ode_eigen.h" 
 #include"../include/root_find.h"
 
-// two point boundary value problem on [a, b] for a SCALAR equation (single component)
+// eigenvalue value problem on [a, b] for a SCALAR equation (single component)
 // -y'' + q(x)y(x) = lambda y(x)
 // with y(a)=0, y(b)=0
 
